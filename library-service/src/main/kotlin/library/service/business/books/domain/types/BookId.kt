@@ -1,3 +1,5 @@
+package library.service.business.books.domain.types
+
 import library.service.business.exceptions.MalformedValueException
 import java.util.*
 

@@ -8,15 +8,11 @@ import javax.inject.Inject
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 
-    @Path("/api/books")
+@Path("/api/books")
 class BooksController(
         @Inject
         private val collection: BookCollection
 ) {
-
-    @GET
-    @Produces(MediaType.TEXT_PLAIN)
-    fun hello() = "hello world"
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)

@@ -1,3 +1,6 @@
+import library.service.business.books.BookDataStore
+import library.service.business.books.BookIdGenerator
+import library.service.business.books.domain.BookRecord
 import library.service.business.books.domain.composites.Book
 import javax.enterprise.context.ApplicationScoped
 
@@ -14,11 +17,9 @@ import javax.enterprise.context.ApplicationScoped
 @ApplicationScoped
 class BookCollection(
         // private val clock: Clock
-        // private val dataStore: BookDataStore,
-        // private val idGenerator: BookIdGenerator
+        private val dataStore: BookDataStore,
+        private val idGenerator: BookIdGenerator
         // private val eventDispatcher: EventDispatcher<BookEvent>
-
-
 ) {
 
     /**
@@ -34,12 +35,16 @@ class BookCollection(
      */
     fun addBook(book: Book): Book {
 
-        //val bookId = idGenerator.generate()
-        //val bookRecord = dataStore.createOrUpdate(BookRecord(bookId, book))
+        val bookId = idGenerator.generate()
+        val bookRecord = dataStore.createOrUpdate(BookRecord(bookId, book))
+
+        System.out.println("bookId$bookId")
+        System.out.println("bookRecord$bookRecord")
 
         //dispatch(bookAddedEvent(bookRecord))
 
         println(book)
+        // return bookRecord
         return book
     }
 }
