@@ -2,7 +2,6 @@ package library.service.business.books
 
 import library.service.business.books.domain.BookRecord
 import library.service.business.books.domain.types.BookId
-import java.util.*
 
 /**
  * Interface defining all methods which need to be implemented by a data store

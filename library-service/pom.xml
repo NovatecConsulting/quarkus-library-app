@@ -58,6 +58,16 @@
       <artifactId>quarkus-resteasy-jackson</artifactId>
       <version>0.24.0</version>
     </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-core-deployment</artifactId>
+      <version>1.2.1.Final</version>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-arc-deployment</artifactId>
+      <version>1.2.1.Final</version>
+    </dependency>
   </dependencies>
   <build>
     <sourceDirectory>src/main/kotlin</sourceDirectory>

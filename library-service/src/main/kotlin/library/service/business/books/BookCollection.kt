@@ -1,7 +1,8 @@
-import library.service.business.books.BookDataStore
-import library.service.business.books.BookIdGenerator
+package library.service.business.books
+
 import library.service.business.books.domain.BookRecord
 import library.service.business.books.domain.composites.Book
+import library.service.business.books.domain.events.BookAdded
 import javax.enterprise.context.ApplicationScoped
 
 /**
@@ -16,10 +17,11 @@ import javax.enterprise.context.ApplicationScoped
  */
 @ApplicationScoped
 class BookCollection(
-        // private val clock: Clock
+
+        //private val clock: Clock,
         private val dataStore: BookDataStore,
         private val idGenerator: BookIdGenerator
-        // private val eventDispatcher: EventDispatcher<BookEvent>
+        //private val eventDispatcher: EventDispatcher<BookEvent>
 ) {
 
     /**
@@ -33,18 +35,24 @@ class BookCollection(
      * @param book the book to add to the collection
      * @return the [BookRecord] for the created book data
      */
-    fun addBook(book: Book): Book {
+    fun addBook(book: Book): BookRecord {
 
         val bookId = idGenerator.generate()
         val bookRecord = dataStore.createOrUpdate(BookRecord(bookId, book))
 
-        System.out.println("bookId$bookId")
-        System.out.println("bookRecord$bookRecord")
+        println("bookId = $bookId")
+        println("bookRecord = $bookRecord")
 
         //dispatch(bookAddedEvent(bookRecord))
 
         println(book)
         // return bookRecord
-        return book
+        return bookRecord
     }
+
+    //private fun bookAddedEvent(bookRecord: BookRecord) = BookAdded(timestamp = now(), bookRecord = bookRecord)
+
+    //private fun dispatch(event: BookEvent) = eventDispatcher.dispatch(event)
+    //private fun now() = OffsetDateTime.now(clock)
+
 }

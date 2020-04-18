@@ -1,25 +1,27 @@
 package library.service.api
 
-import BookCollection
+import library.service.business.books.BookCollection
+import library.service.business.books.domain.BookRecord
 import library.service.business.books.domain.composites.Book
-import library.service.business.books.domain.types.Isbn13
-import library.service.business.books.domain.types.Title
-import javax.inject.Inject
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 
 @Path("/api/books")
 class BooksController(
-        @Inject
+
         private val collection: BookCollection
 ) {
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    fun postBooks(book: Book): Book {
+    fun postBooks(book: Book): BookRecord {
 
-        return collection.addBook(book)
+        // Temporary
+        val bookRecord = collection.addBook(book)
+        println("bookRecordController = $bookRecord")
+
+        return bookRecord
 
     }
 }
