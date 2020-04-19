@@ -3,13 +3,18 @@ package library.service.api
 import library.service.business.books.BookCollection
 import library.service.business.books.domain.BookRecord
 import library.service.business.books.domain.composites.Book
-import javax.ws.rs.*
+import javax.inject.Inject
+import javax.ws.rs.Consumes
+import javax.ws.rs.POST
+import javax.ws.rs.Path
+import javax.ws.rs.Produces
 import javax.ws.rs.core.MediaType
 
 @Path("/api/books")
 class BooksController(
 
-        private val collection: BookCollection
+        @Inject
+        val collection: BookCollection
 ) {
 
     @POST
