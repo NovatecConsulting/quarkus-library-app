@@ -1,9 +1,10 @@
+
 import library.service.business.books.BookDataStore
 import library.service.business.books.domain.BookRecord
 import library.service.business.books.domain.types.BookId
-import javax.enterprise.context.ApplicationScoped
+import javax.inject.Singleton
 
-@ApplicationScoped
+@Singleton
 class MongoBookDataStore(
 ) : BookDataStore {
 

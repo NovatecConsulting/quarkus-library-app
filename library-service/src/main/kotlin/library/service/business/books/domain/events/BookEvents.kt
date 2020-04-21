@@ -4,10 +4,10 @@ import library.service.business.books.domain.BookRecord
 import library.service.business.events.DomainEvent
 import java.time.OffsetDateTime
 import java.util.*
-import javax.enterprise.context.ApplicationScoped
+import javax.inject.Singleton
 
 /** Base class for domain events related to books. */
-@ApplicationScoped
+@Singleton
 sealed class BookEvent(
         type: String,
         id: UUID,
@@ -33,7 +33,7 @@ sealed class BookEvent(
 }
 
 /** A new book was added to the library. */
-@ApplicationScoped
+@Singleton
 class BookAdded(
         id: UUID = UUID.randomUUID(),
         timestamp: OffsetDateTime,

@@ -2,9 +2,9 @@ package library.service.messaging
 
 import library.service.business.books.domain.events.BookEvent
 import library.service.business.events.EventDispatcher
-import javax.enterprise.context.ApplicationScoped
+import javax.inject.Singleton
 
-@ApplicationScoped
+@Singleton
 class MessagingBookEventDispatcher(
         //private val rabbitTemplate: RabbitTemplate,
         //private val exchange: BookEventsExchange,

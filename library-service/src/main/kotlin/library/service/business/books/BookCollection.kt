@@ -9,7 +9,7 @@ import library.service.business.events.EventDispatcher
 import library.service.business.exceptions.BookNotFoundException
 import java.time.Clock
 import java.time.OffsetDateTime
-import javax.enterprise.context.ApplicationScoped
+import javax.inject.Singleton
 
 /**
  * This represents the book collection of this library application instance.
@@ -21,7 +21,7 @@ import javax.enterprise.context.ApplicationScoped
  * - deleting books
  * - borrowing & returning books
  */
-@ApplicationScoped
+@Singleton
 class BookCollection(
 
         private val clock: Clock,
