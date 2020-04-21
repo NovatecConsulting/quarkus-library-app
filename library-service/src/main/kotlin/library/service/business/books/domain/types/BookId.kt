@@ -1,9 +1,11 @@
 package library.service.business.books.domain.types
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect
 import library.service.business.exceptions.MalformedValueException
 import java.util.*
 
 /** The unique ID of a [BookRecord]. */
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 data class BookId(
         private val value: UUID
 ) {

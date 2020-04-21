@@ -1,5 +1,6 @@
 package library.service.business.books.domain.composites
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect
 import library.service.business.books.domain.types.Author
 import library.service.business.books.domain.types.Isbn13
 import library.service.business.books.domain.types.Title
@@ -11,6 +12,7 @@ import library.service.business.books.domain.types.Title
  * @see Title
  * @see Author
  */
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 data class Book(
         val isbn: Isbn13,
         val title: Title,

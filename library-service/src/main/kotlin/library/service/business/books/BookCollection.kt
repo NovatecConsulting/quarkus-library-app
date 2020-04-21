@@ -6,6 +6,7 @@ import library.service.business.books.domain.events.BookAdded
 import library.service.business.books.domain.events.BookEvent
 import library.service.business.events.EventDispatcher
 import java.time.Clock
+import java.time.OffsetDateTime
 import javax.enterprise.context.ApplicationScoped
 
 /**
@@ -47,16 +48,28 @@ class BookCollection(
         println("bookId = $bookId")
         println("bookRecord = $bookRecord")
 
-        //dispatch(bookAddedEvent(bookRecord))
+        dispatch(bookAddedEvent(bookRecord))
 
         println(book)
-        // return bookRecord
+
         return bookRecord
     }
 
-    //private fun bookAddedEvent(bookRecord: BookRecord) = BookAdded(timestamp = now(), bookRecord = bookRecord)
+    /**
+     * Gets a list of all [BookRecord] currently part of this collection.
+     *
+     * The books are looked up in the collection's [BookDataStore]. If there
+     * are no books in the data store, an empty list is returned.
+     *
+     * @return a list of all [BookRecord]
+     */
+    fun getAllBooks(): List<BookRecord> {
+        return dataStore.findAll()
+    }
 
-    //private fun dispatch(event: BookEvent) = eventDispatcher.dispatch(event)
-    //private fun now() = OffsetDateTime.now(clock)
+    private fun bookAddedEvent(bookRecord: BookRecord) = BookAdded(timestamp = now(), bookRecord = bookRecord)
+
+    private fun dispatch(event: BookEvent) = eventDispatcher.dispatch(event)
+    private fun now() = OffsetDateTime.now(clock)
 
 }

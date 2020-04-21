@@ -22,6 +22,14 @@ interface BookDataStore {
     fun createOrUpdate(bookRecord: BookRecord): BookRecord
 
     /**
+     * Finds all [BookRecord] currently present in the data store and returns
+     * them as a list.
+     *
+     * @return the found [BookRecord] as a list
+     */
+    fun findAll(): List<BookRecord>
+
+    /**
      * Checks if there exists a [BookRecord] for the given [BookId].
      *
      * @return `true` if a record exists, otherwise `false`

@@ -1,5 +1,6 @@
 package library.service.business.books.domain
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect
 import library.service.business.books.domain.composites.Book
 import library.service.business.books.domain.states.Available
 import library.service.business.books.domain.states.BookState
@@ -13,9 +14,11 @@ import library.service.business.books.exceptions.BookAlreadyReturnedException
 import java.time.OffsetDateTime
 import java.util.*
 
+
 /**
  * Aggregate of a [Book], its unique reference ID ([UUID]) and [state][BookState].
  */
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 data class BookRecord(
         val id: BookId,
         val book: Book,

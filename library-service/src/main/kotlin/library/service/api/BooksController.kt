@@ -1,32 +1,51 @@
 package library.service.api
 
+import library.service.api.books.payload.CreateBookRequest
 import library.service.business.books.BookCollection
 import library.service.business.books.domain.BookRecord
 import library.service.business.books.domain.composites.Book
-import javax.inject.Inject
-import javax.ws.rs.Consumes
-import javax.ws.rs.POST
-import javax.ws.rs.Path
-import javax.ws.rs.Produces
+import library.service.business.books.domain.types.Isbn13
+import library.service.business.books.domain.types.Title
+import javax.validation.Valid
+import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 
+
 @Path("/api/books")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 class BooksController(
 
-        @Inject
         val collection: BookCollection
 ) {
 
-    @POST
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    fun postBooks(book: Book): BookRecord {
+    @GET
+    fun getBooks(): List<BookRecord> {
+        val allBooks = collection.getAllBooks()
+        println("allBooks = $allBooks")
+        return allBooks
+    }
 
-        // Temporary
+    @POST
+    fun postBooks(@Valid body: CreateBookRequest): BookRecord {
+
+        val book = Book(
+                isbn = Isbn13.parse(body.isbn!!),
+                title = Title(body.title!!),
+                authors = emptyList(),
+                numberOfPages = null
+        )
+
+        println("book = $book")
         val bookRecord = collection.addBook(book)
         println("bookRecordController = $bookRecord")
 
         return bookRecord
+    }
+
+    @PUT
+    @Produces(MediaType.APPLICATION_JSON)
+    fun putBookTitle() {
 
     }
 }
