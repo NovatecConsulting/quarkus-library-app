@@ -4,7 +4,9 @@ import library.service.business.books.domain.BookRecord
 import library.service.business.books.domain.composites.Book
 import library.service.business.books.domain.events.BookAdded
 import library.service.business.books.domain.events.BookEvent
+import library.service.business.books.domain.types.BookId
 import library.service.business.events.EventDispatcher
+import library.service.business.exceptions.BookNotFoundException
 import java.time.Clock
 import java.time.OffsetDateTime
 import javax.enterprise.context.ApplicationScoped
@@ -53,6 +55,10 @@ class BookCollection(
         println(book)
 
         return bookRecord
+    }
+
+    fun getBook(id: BookId): BookRecord {
+        return dataStore.findById(id) ?: throw BookNotFoundException(id)
     }
 
     /**

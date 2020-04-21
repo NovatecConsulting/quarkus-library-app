@@ -4,8 +4,11 @@ import library.service.api.books.payload.CreateBookRequest
 import library.service.business.books.BookCollection
 import library.service.business.books.domain.BookRecord
 import library.service.business.books.domain.composites.Book
+import library.service.business.books.domain.types.BookId
 import library.service.business.books.domain.types.Isbn13
 import library.service.business.books.domain.types.Title
+import org.jboss.resteasy.annotations.jaxrs.PathParam
+import java.util.*
 import javax.validation.Valid
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
@@ -40,6 +43,16 @@ class BooksController(
         val bookRecord = collection.addBook(book)
         println("bookRecordController = $bookRecord")
 
+        return bookRecord
+    }
+
+    @GET
+    @Path("/{id}")
+    fun getBook(@PathParam id: UUID): BookRecord {
+        println("UUID = $id")
+
+        val bookRecord = collection.getBook(BookId(id))
+        println("bookRecord = $bookRecord")
         return bookRecord
     }
 

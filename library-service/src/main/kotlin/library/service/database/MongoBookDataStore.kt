@@ -10,6 +10,8 @@ class MongoBookDataStore(
     val list = mutableListOf<BookRecord>()
 
     override fun existsById(bookId: BookId): Boolean {
+        val book: BookRecord? = list.find { it.id == bookId}
+        println("DB book = $book")
         return false
     }
 
@@ -18,6 +20,16 @@ class MongoBookDataStore(
         println("List contains = $list")
         println("Size of list = ${list.size}")
         return bookRecord
+    }
+
+    override fun delete(bookRecord: BookRecord) {
+        TODO("Not yet implemented")
+    }
+
+    override fun findById(bookId: BookId): BookRecord? {
+        val book: BookRecord? = list.find { it.id == bookId }
+        println("DB book = $book")
+        return book
     }
 
     override fun findAll(): List<BookRecord> {

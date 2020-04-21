@@ -2,6 +2,7 @@ package library.service.business.books
 
 import library.service.business.books.domain.BookRecord
 import library.service.business.books.domain.types.BookId
+import java.util.*
 
 /**
  * Interface defining all methods which need to be implemented by a data store
@@ -20,6 +21,21 @@ interface BookDataStore {
      * @return the created / updated [BookRecord]
      */
     fun createOrUpdate(bookRecord: BookRecord): BookRecord
+
+    /**
+     * Deletes the given [BookRecord] from the data store.
+     *
+     * @param bookRecord the [BookRecord] to delete
+     */
+    fun delete(bookRecord: BookRecord)
+
+    /**
+     * Tries to find a [BookRecord] by its unique ID.
+     *
+     * @param id the book's [UUID]
+     * @return the found [BookRecord] - might be `null`!
+     */
+    fun findById(id: BookId): BookRecord?
 
     /**
      * Finds all [BookRecord] currently present in the data store and returns
