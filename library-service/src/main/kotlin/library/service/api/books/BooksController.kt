@@ -1,5 +1,6 @@
-package library.service.api
+package library.service.api.books
 
+import BookResourceAssembler
 import library.service.api.books.payload.CreateBookRequest
 import library.service.business.books.BookCollection
 import library.service.business.books.domain.BookRecord
@@ -19,7 +20,8 @@ import javax.ws.rs.core.MediaType
 @Consumes(MediaType.APPLICATION_JSON)
 class BooksController(
 
-        val collection: BookCollection
+        val collection: BookCollection,
+        val assembler: BookResourceAssembler
 ) {
 
     @GET
@@ -30,20 +32,45 @@ class BooksController(
     }
 
     @POST
-    fun postBooks(@Valid body: CreateBookRequest): BookRecord {
-
+    fun postBook(@Valid body: CreateBookRequest): BookRecord {
         val book = Book(
                 isbn = Isbn13.parse(body.isbn!!),
                 title = Title(body.title!!),
                 authors = emptyList(),
                 numberOfPages = null
         )
-
-        println("book = $book")
         val bookRecord = collection.addBook(book)
-        println("bookRecordController = $bookRecord")
+        return assembler.toResource(bookRecord)
+    }
 
-        return bookRecord
+    @PUT
+    @Path("/{id}/title")
+    fun putBookTitle(@PathParam id: String): String {
+        return id
+    }
+
+    @PUT
+    @Path("/{id}/authors")
+    fun putBookAuthors(@PathParam id: String): String {
+        return id
+    }
+
+    @DELETE
+    @Path("/{id}/authors")
+    fun deleteBookAuthors(@PathParam id: String): String {
+        return id
+    }
+
+    @PUT
+    @Path("/{id}/numberOfPages")
+    fun putBookNumberOfPages(@PathParam id: String): String {
+        return id
+    }
+
+    @DELETE
+    @Path("/{id}/numberOfPages")
+    fun deleteBookNumberOfPages(@PathParam id: String): String {
+        return id
     }
 
     @GET
@@ -56,9 +83,22 @@ class BooksController(
         return bookRecord
     }
 
-    @PUT
-    @Produces(MediaType.APPLICATION_JSON)
-    fun putBookTitle() {
+    @DELETE
+    @Path("/{id}")
+    fun deleteBook() {
 
     }
+
+    @POST
+    @Path("/{id}/borrow")
+    fun postBorrowBook() {
+
+    }
+
+    @POST
+    @Path("/{id}/return")
+    fun postReturnBook() {
+
+    }
+
 }
