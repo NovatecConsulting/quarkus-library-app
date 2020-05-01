@@ -16,6 +16,7 @@ class MessagingBookEventDispatcher(
 
     override fun dispatch(event: BookEvent) {
         println("dispatching event [{}] to exchange [{}]")
+        println("dispatching event = $event")
         //rabbitTemplate.convertAndSend(exchange.name, event.type, event, postProcessor)
         //eventCounter.increment(event)
     }

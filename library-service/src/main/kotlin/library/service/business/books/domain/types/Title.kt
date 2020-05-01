@@ -5,7 +5,9 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect
 /** The title of a book. */
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 data class Title(
+
         private val value: String
+
 ) {
 
     companion object {

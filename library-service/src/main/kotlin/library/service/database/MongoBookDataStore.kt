@@ -8,23 +8,20 @@ import javax.inject.Singleton
 class MongoBookDataStore(
 ) : BookDataStore {
 
-    val list = mutableListOf<BookRecord>()
+    private val list = mutableListOf<BookRecord>()
 
     override fun existsById(bookId: BookId): Boolean {
-        val book: BookRecord? = list.find { it.id == bookId}
-        println("DB book = $book")
-        return false
+        val book: BookRecord? = list.find { it.id == bookId }
+        return book != null
     }
 
     override fun createOrUpdate(bookRecord: BookRecord): BookRecord {
         list.add(bookRecord)
-        println("List contains = $list")
-        println("Size of list = ${list.size}")
         return bookRecord
     }
 
     override fun delete(bookRecord: BookRecord) {
-        TODO("Not yet implemented")
+        println("DELETED BOOK = $bookRecord")
     }
 
     override fun findById(bookId: BookId): BookRecord? {
