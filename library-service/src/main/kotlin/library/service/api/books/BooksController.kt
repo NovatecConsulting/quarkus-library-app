@@ -9,8 +9,11 @@ import org.jboss.resteasy.annotations.jaxrs.PathParam
 import java.util.*
 import javax.validation.Valid
 import javax.ws.rs.*
+import javax.ws.rs.core.Context
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
+import javax.ws.rs.core.UriInfo
+
 
 @Path("/api/books")
 @Produces(MediaType.APPLICATION_JSON)
@@ -27,7 +30,7 @@ class BooksController(
     }
 
     @POST
-    fun postBook(@Valid body: CreateBookRequest): Response? {
+    fun postBook(@Valid body: CreateBookRequest, @Context uriInfo: UriInfo): Response? {
         val book = Book(
                 isbn = Isbn13.parse(body.isbn!!),
                 title = Title(body.title!!),
