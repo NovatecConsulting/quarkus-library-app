@@ -3,11 +3,13 @@ package library.service.business.books
 import library.service.business.books.domain.BookRecord
 import library.service.business.books.domain.types.BookId
 import java.util.*
+import javax.enterprise.context.ApplicationScoped
 
 /**
  * Interface defining all methods which need to be implemented by a data store
  * in order to handle the persistence of books.
  */
+@ApplicationScoped
 interface BookDataStore {
 
     /**

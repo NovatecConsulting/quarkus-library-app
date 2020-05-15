@@ -5,10 +5,12 @@ import library.service.business.books.domain.types.BookId
 import javax.inject.Singleton
 
 @Singleton
-class MongoBookDataStore(
+class MongoBookDataStore (
 ) : BookDataStore {
 
     private val list = mutableListOf<BookRecord>()
+    private val list2 = mutableListOf<String>()
+
 
     override fun existsById(bookId: BookId): Boolean {
         val book: BookRecord? = list.find { it.id == bookId }
@@ -31,6 +33,7 @@ class MongoBookDataStore(
     }
 
     override fun findAll(): List<BookRecord> {
+        //list2.add("hallo welt")
         return list
     }
 

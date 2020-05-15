@@ -26,7 +26,11 @@ class BooksController(
     @GET
     fun getBooks(): Response? {
         val allBooks = collection.getAllBooks()
-        return Response.status(Response.Status.OK).entity(allBooks).build()
+        val bookResources = mutableListOf<BookResource>()
+        for (record in allBooks){
+            bookResources.add(assembler.toResource(record))
+        }
+        return Response.status(Response.Status.OK).entity(bookResources).build()
     }
 
     @POST

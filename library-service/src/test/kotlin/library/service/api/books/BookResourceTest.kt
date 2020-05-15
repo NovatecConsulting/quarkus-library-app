@@ -2,7 +2,7 @@ package library.service.api.books
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.quarkus.test.junit.QuarkusTest
-import org.junit.jupiter.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import utils.classification.UnitTest
 
@@ -14,6 +14,7 @@ class BookResourceTest {
 
     @Test
     fun `min instance`() {
+
         val cut = BookResource(
                 isbn = "0123456789",
                 title = "Hello World",
@@ -54,6 +55,6 @@ class BookResourceTest {
     private fun assertJsonSerializable(cut: BookResource) {
         val serialized = objectMapper.writeValueAsString(cut)
         val deSerialized = objectMapper.readValue(serialized, BookResource::class.java)
-        Assertions.assertEquals(deSerialized, cut)
+        assertThat(deSerialized).isEqualTo(cut)
     }
 }
