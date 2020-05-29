@@ -40,6 +40,7 @@ internal class BooksControllerIntTest {
     @Mock
     fun bookIdGenerator(): BookIdGenerator = bookIdGenerator
 
+
     @BeforeEach
     fun setTime() {
         clock.setFixedTime("2017-08-20T12:34:56.789Z")
@@ -49,6 +50,7 @@ internal class BooksControllerIntTest {
     fun initMocks() {
         every { bookDataStore.findById(any()) } returns null
         every { bookDataStore.createOrUpdate(any()) } answers { firstArg() }
+
     }
 
     @Test

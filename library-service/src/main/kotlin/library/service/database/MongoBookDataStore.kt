@@ -3,7 +3,7 @@ import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.Filters.and
 import com.mongodb.client.model.Filters.eq
-import com.mongodb.client.model.UpdateOptions
+import com.mongodb.client.model.ReplaceOptions
 import library.service.business.books.BookDataStore
 import library.service.business.books.domain.BookRecord
 import library.service.business.books.domain.types.BookId
@@ -36,7 +36,8 @@ class MongoBookDataStore (
         getCollection().replaceOne(
                 and(eq("_id", bookDocument.id)),
                 bookDocument,
-                UpdateOptions().upsert(true))
+                ReplaceOptions().upsert(true))
+
         return bookDocument
     }
 

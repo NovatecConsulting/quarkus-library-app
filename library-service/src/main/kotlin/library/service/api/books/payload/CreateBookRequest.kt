@@ -7,7 +7,7 @@ import javax.validation.constraints.Pattern
 import javax.validation.constraints.Size
 
 /** Request body used when creating a book. */
-data class CreateBookRequest(
+data class CreateBookRequest (
         @field:NotBlank
         @field:Pattern(regexp = Isbn13.VALID_PARSE_PATTERN)
         val isbn: String?,
