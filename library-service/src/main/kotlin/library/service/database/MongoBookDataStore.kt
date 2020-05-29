@@ -1,16 +1,25 @@
 
+import com.mongodb.client.MongoClient
+import com.mongodb.client.MongoCollection
+import com.mongodb.client.model.Filters.and
+import com.mongodb.client.model.Filters.eq
+import com.mongodb.client.model.UpdateOptions
 import library.service.business.books.BookDataStore
 import library.service.business.books.domain.BookRecord
 import library.service.business.books.domain.types.BookId
+import library.service.database.BookDocument
+import library.service.database.Mapper
 import javax.inject.Singleton
 
 @Singleton
 class MongoBookDataStore (
+        private val mongoClient: MongoClient,
+        private val bookRecordToDocumentMapper: Mapper<BookRecord, BookDocument>,
+        private val bookDocumentToRecordMapper: Mapper<BookDocument, BookRecord>
 ) : BookDataStore {
 
-    private val list = mutableListOf<BookRecord>()
-    private val list2 = mutableListOf<String>()
 
+    private val list = mutableListOf<BookRecord>()
 
     override fun existsById(bookId: BookId): Boolean {
         val book: BookRecord? = list.find { it.id == bookId }
@@ -18,8 +27,17 @@ class MongoBookDataStore (
     }
 
     override fun createOrUpdate(bookRecord: BookRecord): BookRecord {
-        list.add(bookRecord)
-        return bookRecord
+        val document = bookRecordToDocumentMapper.map(bookRecord)
+        val updatedDocument = save(document)
+        return bookDocumentToRecordMapper.map(updatedDocument)
+    }
+
+    private fun save(bookDocument: BookDocument): BookDocument {
+        getCollection().replaceOne(
+                and(eq("_id", bookDocument.id)),
+                bookDocument,
+                UpdateOptions().upsert(true))
+        return bookDocument
     }
 
     override fun delete(bookRecord: BookRecord) {
@@ -33,8 +51,15 @@ class MongoBookDataStore (
     }
 
     override fun findAll(): List<BookRecord> {
-        //list2.add("hallo welt")
-        return list
+        val documents = getCollection().find()
+        val bookRecord = mutableListOf<BookRecord>()
+        documents.forEach { bookRecord.add(bookDocumentToRecordMapper.map(it)) }
+        return bookRecord
+    }
+
+    private fun getCollection(): MongoCollection<BookDocument> {
+        return mongoClient.getDatabase("library-service").getCollection("books",
+                BookDocument::class.java)
     }
 
 }

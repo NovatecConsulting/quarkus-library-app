@@ -89,6 +89,14 @@
       <scope>test</scope>
     </dependency>
 
+    <!-- https://mvnrepository.com/artifact/io.quarkus/quarkus-mongodb-client -->
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-mongodb-client</artifactId>
+      <version>1.2.1.Final</version>
+    </dependency>
+
+
   </dependencies>
   <build>
     <sourceDirectory>src/main/kotlin</sourceDirectory>

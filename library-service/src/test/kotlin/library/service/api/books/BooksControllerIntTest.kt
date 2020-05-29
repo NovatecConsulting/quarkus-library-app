@@ -6,6 +6,7 @@ import io.quarkus.test.Mock
 import io.quarkus.test.junit.QuarkusTest
 import io.restassured.RestAssured.given
 import library.service.business.books.BookDataStore
+import library.service.business.books.BookIdGenerator
 import library.service.business.books.domain.BookRecord
 import library.service.business.books.domain.composites.Book
 import library.service.business.books.domain.types.BookId
@@ -22,6 +23,7 @@ import javax.inject.Inject
 import javax.ws.rs.core.MediaType
 
 val bookDataStore = mockk<BookDataStore>()
+val bookIdGenerator = mockk<BookIdGenerator>()
 
 @IntegrationTest
 @QuarkusTest
@@ -34,10 +36,13 @@ internal class BooksControllerIntTest {
     @Mock
     fun bookDataStore(): BookDataStore = bookDataStore
 
+    @Produces
+    @Mock
+    fun bookIdGenerator(): BookIdGenerator = bookIdGenerator
+
     @BeforeEach
     fun setTime() {
         clock.setFixedTime("2017-08-20T12:34:56.789Z")
-
     }
 
     @BeforeEach
@@ -79,7 +84,6 @@ internal class BooksControllerIntTest {
                 .`when`().get("/api/books")
                 .then().contentType(MediaType.APPLICATION_JSON)
                 .body(JsonMatcher.jsonEqualTo(expectedResponse))
-
     }
 
     @Test
@@ -129,6 +133,27 @@ internal class BooksControllerIntTest {
                 .`when`().get("/api/books")
                 .then().contentType(MediaType.APPLICATION_JSON)
                 .body(JsonMatcher.jsonEqualTo(expectedResponse))
+
+    }
+
+    @Test fun `creates a book and responds with its resource representation`() {
+        val bookId = BookId.generate()
+        every { bookIdGenerator.generate() } returns bookId
+
+        val requestBody = """
+                    {
+                      "isbn": "9780132350884",
+                      "title": "Clean Code: A Handbook of Agile Software Craftsmanship"
+                    }
+                """
+
+        val expectedResponse = """
+                    {
+                      "isbn": "9780132350884",
+                      "title": "Clean Code: A Handbook of Agile Software Craftsmanship",
+                      "authors": []
+                    }
+                """
 
     }
 

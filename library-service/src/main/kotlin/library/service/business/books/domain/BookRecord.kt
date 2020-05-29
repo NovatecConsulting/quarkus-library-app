@@ -13,12 +13,14 @@ import library.service.business.books.exceptions.BookAlreadyBorrowedException
 import library.service.business.books.exceptions.BookAlreadyReturnedException
 import java.time.OffsetDateTime
 import java.util.*
+import javax.inject.Singleton
 
 
 /**
  * Aggregate of a [Book], its unique reference ID ([UUID]) and [state][BookState].
  */
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+@Singleton
 data class BookRecord(
         val id: BookId,
         val book: Book,

@@ -1,7 +1,6 @@
 package library.service.api.books
 
 import BookResourceAssembler
-import io.quarkus.test.junit.QuarkusTest
 import library.service.business.books.domain.BookRecord
 import library.service.business.books.domain.types.BookId
 import library.service.business.books.domain.types.Borrower
@@ -12,7 +11,6 @@ import utils.classification.UnitTest
 import java.time.OffsetDateTime
 
 @UnitTest
-@QuarkusTest
 internal class BookResourceAssemblerTest {
 
     val cut = BookResourceAssembler()
