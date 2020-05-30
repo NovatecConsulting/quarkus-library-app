@@ -5,7 +5,6 @@ import org.bson.codecs.pojo.annotations.BsonId
 import org.bson.codecs.pojo.annotations.BsonProperty
 import java.util.*
 
-
 data class BookDocument @BsonCreator constructor(
         @BsonId val id: UUID,
         @BsonProperty("isbn")  val isbn: String,

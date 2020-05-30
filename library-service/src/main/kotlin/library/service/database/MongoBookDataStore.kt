@@ -1,7 +1,7 @@
 
+import com.mongodb.MongoClientSettings
 import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoCollection
-import com.mongodb.client.model.Filters.and
 import com.mongodb.client.model.Filters.eq
 import com.mongodb.client.model.ReplaceOptions
 import library.service.business.books.BookDataStore
@@ -9,58 +9,75 @@ import library.service.business.books.domain.BookRecord
 import library.service.business.books.domain.types.BookId
 import library.service.database.BookDocument
 import library.service.database.Mapper
+import org.bson.UuidRepresentation
+import org.bson.codecs.UuidCodecProvider
+import org.bson.codecs.configuration.CodecRegistries
+import org.bson.codecs.pojo.PojoCodecProvider
+import java.util.*
 import javax.inject.Singleton
 
+
 @Singleton
-class MongoBookDataStore (
+class MongoBookDataStore(
         private val mongoClient: MongoClient,
         private val bookRecordToDocumentMapper: Mapper<BookRecord, BookDocument>,
         private val bookDocumentToRecordMapper: Mapper<BookDocument, BookRecord>
 ) : BookDataStore {
 
 
-    private val list = mutableListOf<BookRecord>()
-
     override fun existsById(bookId: BookId): Boolean {
-        val book: BookRecord? = list.find { it.id == bookId }
+        val book = getCollection().find(eq("_id", UUID.fromString(bookId.toString()))).first()
         return book != null
     }
 
     override fun createOrUpdate(bookRecord: BookRecord): BookRecord {
         val document = bookRecordToDocumentMapper.map(bookRecord)
-        val updatedDocument = save(document)
-        return bookDocumentToRecordMapper.map(updatedDocument)
-    }
-
-    private fun save(bookDocument: BookDocument): BookDocument {
-        getCollection().replaceOne(
-                and(eq("_id", bookDocument.id)),
-                bookDocument,
+        val updateResult = getCollection().replaceOne(
+                eq("_id", document.id),
+                document,
                 ReplaceOptions().upsert(true))
 
-        return bookDocument
+        return if (updateResult.upsertedId == null) {
+            // Update element, when document matches id
+            val updatedDocument = getCollection().find(eq("_id", document.id)).first()
+            bookDocumentToRecordMapper.map(updatedDocument)
+
+        } else {
+            // Create new element, when no document matches id
+            val updatedDocument = getCollection().find(eq("_id", updateResult.upsertedId)).first()
+            bookDocumentToRecordMapper.map(updatedDocument)
+        }
+
     }
 
     override fun delete(bookRecord: BookRecord) {
-        println("DELETED BOOK = $bookRecord")
+        val document = bookRecordToDocumentMapper.map(bookRecord)
+        getCollection().deleteOne(eq("_id", document.id))
     }
 
-    override fun findById(bookId: BookId): BookRecord? {
-        val book: BookRecord? = list.find { it.id == bookId }
-        println("DB book = $book")
-        return book
+    override fun findById(id: BookId): BookRecord? {
+        val book = getCollection().find(eq("_id", UUID.fromString(id.toString()))).first()
+        if (book != null) {
+            return bookDocumentToRecordMapper.map(book)
+        }
+        return null
     }
 
     override fun findAll(): List<BookRecord> {
-        val documents = getCollection().find()
+        val documents = getCollection().find().toList()
         val bookRecord = mutableListOf<BookRecord>()
         documents.forEach { bookRecord.add(bookDocumentToRecordMapper.map(it)) }
         return bookRecord
     }
 
     private fun getCollection(): MongoCollection<BookDocument> {
-        return mongoClient.getDatabase("library-service").getCollection("books",
-                BookDocument::class.java)
+
+        val database = "library-service"
+        val collectionName = "books"
+        val codeRegistries = CodecRegistries.fromRegistries(CodecRegistries.fromProviders(UuidCodecProvider(UuidRepresentation.STANDARD)),
+                MongoClientSettings.getDefaultCodecRegistry(), CodecRegistries.fromProviders(PojoCodecProvider.builder().automatic(true).build()))
+
+        return mongoClient.getDatabase(database).withCodecRegistry(codeRegistries).getCollection(collectionName, BookDocument::class.java)
     }
 
 }
