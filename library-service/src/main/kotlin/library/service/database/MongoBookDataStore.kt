@@ -32,6 +32,7 @@ class MongoBookDataStore(
 
     override fun createOrUpdate(bookRecord: BookRecord): BookRecord {
         val document = bookRecordToDocumentMapper.map(bookRecord)
+        val updatedDocument: BookDocument?
         val updateResult = getCollection().replaceOne(
                 eq("_id", document.id),
                 document,
@@ -39,12 +40,12 @@ class MongoBookDataStore(
 
         return if (updateResult.upsertedId == null) {
             // Update element, when document matches id
-            val updatedDocument = getCollection().find(eq("_id", document.id)).first()
+            updatedDocument = getCollection().find(eq("_id", document.id)).first()
             bookDocumentToRecordMapper.map(updatedDocument)
 
         } else {
             // Create new element, when no document matches id
-            val updatedDocument = getCollection().find(eq("_id", updateResult.upsertedId)).first()
+            updatedDocument = getCollection().find(eq("_id", updateResult.upsertedId)).first()
             bookDocumentToRecordMapper.map(updatedDocument)
         }
 
