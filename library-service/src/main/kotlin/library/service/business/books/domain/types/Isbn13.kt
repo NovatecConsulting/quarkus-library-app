@@ -63,5 +63,4 @@ data class Isbn13(
 
     class NotAnIsbnNumberException(value: String)
         : MalformedValueException("This is not a valid ISBN-13 number: $value")
-
 }

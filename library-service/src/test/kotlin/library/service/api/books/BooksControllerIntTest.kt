@@ -11,6 +11,7 @@ import library.service.business.books.domain.BookRecord
 import library.service.business.books.domain.composites.Book
 import library.service.business.books.domain.types.BookId
 import library.service.business.books.domain.types.Borrower
+import org.apache.http.HttpStatus
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import utils.Books
@@ -39,7 +40,6 @@ internal class BooksControllerIntTest {
     @Produces
     @Mock
     fun bookIdGenerator(): BookIdGenerator = bookIdGenerator
-
 
     @BeforeEach
     fun setTime() {
@@ -151,13 +151,49 @@ internal class BooksControllerIntTest {
 
         val expectedResponse = """
                     {
-                      "isbn": "9780132350884",
-                      "title": "Clean Code: A Handbook of Agile Software Craftsmanship",
-                      "authors": []
+                       "isbn": "9780132350884",
+                       "title": "Clean Code: A Handbook of Agile Software Craftsmanship",
+                       "authors": [],
+                       "numberOfPages": null,
+                       "borrowed": null
                     }
                 """
 
+        given()
+                .contentType(MediaType.APPLICATION_JSON).body(requestBody)
+                .`when`().post("/api/books").then()
+                .statusCode(HttpStatus.SC_CREATED)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(JsonMatcher.jsonEqualTo(expectedResponse))
+
     }
+
+    @Test fun `400 BAD REQUEST for invalid ISBN`() {
+        val requestBody = """
+                    {
+                      "isbn": "abcdefghij",
+                      "title": "Clean Code: A Handbook of Agile Software Craftsmanship"
+                    }
+                """
+
+        val expectedResponse = """
+                    {
+                      "status": 400,
+                      "error": "Bad Request",
+                      "timestamp": "2017-08-20T12:34:56.789Z",
+                      "message": "This is not a valid ISBN-13 number: abcdefghij"
+                    }
+                """
+
+        given()
+                .contentType(MediaType.APPLICATION_JSON).body(requestBody)
+                .`when`().post("/api/books").then()
+                .statusCode(HttpStatus.SC_BAD_REQUEST)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(JsonMatcher.jsonEqualTo(expectedResponse))
+    }
+
+
 
     private fun availableBook(id: BookId, book: Book) = BookRecord(id, book)
     private fun borrowedBook(id: BookId, book: Book, borrowedBy: String, borrowedOn: String) = availableBook(id, book)
