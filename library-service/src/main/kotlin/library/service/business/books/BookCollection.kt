@@ -144,9 +144,14 @@ class BookCollection(
      * @throws BookNotFoundException in case there is no book for the given ID
      */
     fun updateBook(id: BookId, updateFunction: (BookRecord) -> BookRecord): BookRecord {
+        println("INSIDE 1")
         val bookRecord = getBook(id)
+        println("INSIDE 2")
+        println(bookRecord)
         val updatedRecord = updateFunction(bookRecord)
+        println("INSIDE 3")
         val savedAndUpdatedRecord = dataStore.createOrUpdate(updatedRecord)
+        println("INSIDE 4")
         dispatch(bookUpdatedEvent(savedAndUpdatedRecord))
 
         return savedAndUpdatedRecord

@@ -36,7 +36,7 @@ internal class BorrowBookRequestTest : AbstractPayloadTest<BorrowBookRequest>() 
 
             @Test
             fun `null`() {
-                assertThat(validate(null)).containsOnly("may not be null")
+                assertThat(validate(null)).containsOnly(nullError)
             }
 
             @Test

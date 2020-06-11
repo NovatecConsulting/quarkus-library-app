@@ -5,6 +5,7 @@ import library.service.api.books.payload.*
 import library.service.business.books.BookCollection
 import library.service.business.books.domain.composites.Book
 import library.service.business.books.domain.types.*
+import library.service.business.exceptions.BookNotFoundException
 import org.jboss.resteasy.annotations.jaxrs.PathParam
 import java.util.*
 import javax.validation.Valid
@@ -57,8 +58,12 @@ class BooksController(
     @PUT
     @Path("/{id}/authors")
     fun putBookAuthors(@PathParam id: UUID, body: UpdateAuthorsRequest): Response? {
-        val bookRecord = collection.updateBook(BookId(id)) {
-            it.changeAuthors(body.authors!!.map { Author(it) })
+        val bookRecord = collection.updateBook(BookId(id)) { it ->
+            if (body.authors.isNullOrEmpty()) {
+                throw BookNotFoundException(BookId(id))
+            }
+            it.changeAuthors(body.authors.map { Author(it) })
+
         }
         return Response.status(Response.Status.OK).entity(assembler.toResource(bookRecord)).build()
     }

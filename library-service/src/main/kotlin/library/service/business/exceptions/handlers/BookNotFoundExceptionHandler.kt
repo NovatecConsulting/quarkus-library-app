@@ -1,6 +1,6 @@
 
 import library.service.api.ErrorDescription
-import library.service.business.exceptions.MalformedValueException
+import library.service.business.exceptions.NotFoundException
 import org.apache.http.HttpStatus
 import java.time.Clock
 import java.time.OffsetDateTime
@@ -11,23 +11,24 @@ import javax.ws.rs.ext.Provider
 
 @Provider
 @ApplicationScoped
-class MalformedValueExceptionHandler(
-        private val clock: Clock) : ExceptionMapper<MalformedValueException> {
+class BookNotFoundExceptionHandler(
+        private val clock: Clock) : ExceptionMapper<NotFoundException> {
 
-    override fun toResponse(p0: MalformedValueException?): Response? {
+    override fun toResponse(p0: NotFoundException?): Response {
 
-        println("CLOCK + $clock")
+        println("Message + ${p0?.message}")
 
         val errorDescription = p0?.message?.let {
             ErrorDescription(
-                    status = HttpStatus.SC_BAD_REQUEST,
-                    error = "Bad Request",
+                    status = HttpStatus.SC_NOT_FOUND,
+                    error = "Not Found",
                     timestamp = OffsetDateTime.now(clock).toString(),
                     correlationId = "",
                     message = it
             )
         }
-        return Response.status(HttpStatus.SC_BAD_REQUEST).entity(errorDescription).build()
+        return Response.status(HttpStatus.SC_NOT_FOUND).entity(errorDescription).build()
     }
+
 
 }
