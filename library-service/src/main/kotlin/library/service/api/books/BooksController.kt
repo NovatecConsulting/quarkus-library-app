@@ -5,7 +5,7 @@ import library.service.api.books.payload.*
 import library.service.business.books.BookCollection
 import library.service.business.books.domain.composites.Book
 import library.service.business.books.domain.types.*
-import library.service.business.exceptions.BookNotFoundException
+import library.service.business.exceptions.MalformedValueException
 import org.jboss.resteasy.annotations.jaxrs.PathParam
 import java.util.*
 import javax.validation.Valid
@@ -60,7 +60,7 @@ class BooksController(
     fun putBookAuthors(@PathParam id: UUID, body: UpdateAuthorsRequest): Response? {
         val bookRecord = collection.updateBook(BookId(id)) { it ->
             if (body.authors.isNullOrEmpty()) {
-                throw BookNotFoundException(BookId(id))
+                throw MalformedValueException("The field 'authors' must not be empty.")
             }
             it.changeAuthors(body.authors.map { Author(it) })
 

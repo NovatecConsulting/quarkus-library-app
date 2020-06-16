@@ -32,6 +32,11 @@ internal class BooksControllerIntTest {
 
     @Inject
     lateinit var clock: MutableClock
+    private final val id = BookId.generate()
+    private final val book = Books.CLEAN_CODE
+    val availableBookRecord = availableBook(id, book)
+    val borrowedBookRecord = borrowedBook(id, book, "Uncle Bob", "2017-08-20T12:34:56.789Z")
+
 
     @Produces
     @Mock
@@ -144,6 +149,7 @@ internal class BooksControllerIntTest {
 
     @Test
     fun `POST - creates a book and responds with its resource representation`() {
+
         val bookId = BookId.generate()
         every { bookIdGenerator.generate() } returns bookId
 
@@ -269,10 +275,6 @@ internal class BooksControllerIntTest {
     @Test
     fun `DELETE - existing book is deleted and response is empty 204 NO CONTENT`() {
 
-        val id = BookId.generate()
-        val book = Books.CLEAN_CODE
-        val availableBookRecord = availableBook(id, book)
-
         every { bookDataStore.findById(id) } returns availableBookRecord
         every { bookDataStore.delete(availableBookRecord) } returns Unit
 
@@ -283,8 +285,6 @@ internal class BooksControllerIntTest {
 
     @Test
     fun `DELETE - 404 NOT FOUND for non-existing book`() {
-
-        val id = BookId.generate()
 
         val expectedResponse = """
                     {
@@ -314,10 +314,6 @@ internal class BooksControllerIntTest {
 
     @Test
     fun `PUT - replaces authors of book and responds with its resource representation`() {
-
-        val id = BookId.generate()
-        val book = Books.CLEAN_CODE
-        val availableBookRecord = availableBook(id, book)
 
         every { bookDataStore.findById(id) } returns availableBookRecord
 
@@ -352,7 +348,6 @@ internal class BooksControllerIntTest {
 
     @Test
     fun `PUT - 404 NOT FOUND for non-existing book`() {
-        val id = BookId.generate()
 
         val requestBody = """
                     { 
@@ -378,12 +373,57 @@ internal class BooksControllerIntTest {
 
     @Test
     fun `PUT - 400 BAD REQUEST for missing required properties`() {
-        val id = BookId.generate()
+
+        every { bookDataStore.findById(id) } returns availableBookRecord
 
         val requestBody = """
                     {
                     }
                 """
+
+        val expectedResponse = """
+                {
+                    "status": 400,
+                    "error": "Bad Request",
+                    "timestamp":"2017-08-20T12:34:56.789Z",
+                    "message": "The request's body is invalid. See details...",
+                    "details": [
+                        "The field 'authors' must not be empty."
+                    ]
+                }
+            """
+
+        given()
+                .contentType(MediaType.APPLICATION_JSON).body(requestBody)
+                .`when`().put("/api/books/$id/authors")
+                .then().contentType(MediaType.APPLICATION_JSON)
+                .body(JsonMatcher.jsonEqualTo(expectedResponse))
+    }
+
+    @Test
+    fun `DELETE - removes authors from book and responds with its resource representation`() {
+
+        every { bookDataStore.findById(id) } returns availableBookRecord
+
+        val expectedResponse = """
+                {
+                    "isbn": "${book.isbn}",
+                    "title": "${book.title}",
+                    "authors": [],
+                    "numberOfPages": ${book.numberOfPages},
+                    "borrowed": null
+                }
+            """
+
+        given()
+                .`when`().delete("/api/books/$id/authors")
+                .then().contentType(MediaType.APPLICATION_JSON)
+                .body(JsonMatcher.jsonEqualTo(expectedResponse))
+
+    }
+
+    @Test
+    fun `DELETE Author - 404 NOT FOUND for non-existing book`() {
 
         val expectedResponse = """
                 {
@@ -395,10 +435,155 @@ internal class BooksControllerIntTest {
             """
 
         given()
-                .contentType(MediaType.APPLICATION_JSON).body(requestBody)
-                .`when`().put("/api/books/$id/authors")
+                .`when`().delete("/api/books/$id/authors")
                 .then().contentType(MediaType.APPLICATION_JSON)
                 .body(JsonMatcher.jsonEqualTo(expectedResponse))
+    }
+
+    //================================================================================
+    // /api/books/{id}/authors
+    //================================================================================
+
+    @Test
+    fun `POST - borrows book and responds with its updated resource representation`() {
+
+        every { bookDataStore.findById(id) } returns availableBookRecord
+
+        val requestBody = """
+                    { 
+                        "borrower": "Uncle Bob" 
+                    }
+                """
+
+        val expectedResponse = """
+                    {
+                        "isbn": "9780132350884",
+                        "title": "Clean Code: A Handbook of Agile Software Craftsmanship",
+                        "authors": [
+                            "Robert C. Martin",
+                            "Dean Wampler"
+                        ],
+                        "numberOfPages": 462,
+                        "borrowed": {
+                            "by": "Uncle Bob",
+                            "on": "2017-08-20T12:34:56.789Z"
+                        }
+                    }
+                """
+
+        given()
+                .contentType(MediaType.APPLICATION_JSON).body(requestBody)
+                .`when`().post("/api/books/$id/borrow").then()
+                .statusCode(HttpStatus.SC_OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(JsonMatcher.jsonEqualTo(expectedResponse))
+
+    }
+
+    @Test
+    fun `POST - 409 CONFLICT for already borrowed book`() {
+
+        every { bookDataStore.findById(id) } returns borrowedBookRecord
+
+        val requestBody = """
+                    { 
+                        "borrower": "Uncle Bob" 
+                    }
+                """
+
+        val expectedResponse = """
+                    {
+                        "status": 409,
+                        "error": "Conflict",
+                        "timestamp": "2017-08-20T12:34:56.789Z",
+                        "message": "The book with ID: $id is already borrowed!"
+                    }   
+                """
+
+        given()
+                .contentType(MediaType.APPLICATION_JSON).body(requestBody)
+                .`when`().post("/api/books/$id/borrow").then()
+                .statusCode(HttpStatus.SC_CONFLICT)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(JsonMatcher.jsonEqualTo(expectedResponse))
+    }
+
+    @Test
+    fun `POST - 404 NOT FOUND for non-existing book`() {
+
+        val requestBody = """
+                    { 
+                        "borrower": "Uncle Bob" 
+                    }
+                """
+
+        val expectedResponse = """
+                    {
+                        "status": 404,
+                        "error": "Not Found",
+                        "timestamp": "2017-08-20T12:34:56.789Z",
+                        "message": "The book with ID: $id does not exist!"
+                    }   
+                """
+
+        given()
+                .contentType(MediaType.APPLICATION_JSON).body(requestBody)
+                .`when`().post("/api/books/$id/borrow").then()
+                .statusCode(HttpStatus.SC_NOT_FOUND)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(JsonMatcher.jsonEqualTo(expectedResponse))
+
+    }
+
+    @Test
+    fun `POST - 400 BAD REQUEST for missing required properties`() {
+
+        val requestBody = """
+                    {
+                    }
+                """
+
+        val expectedResponse = """
+                    {
+                        "status": 400,
+                        "error": "Bad Request",
+                        "timestamp": "2017-08-20T12:34:56.789Z",
+                        "message": "The request's body is invalid. See details...",
+                        "details": [
+                            "The field borrower must not be null"
+                        ]
+                    }
+                """
+
+        given()
+                .contentType(MediaType.APPLICATION_JSON).body(requestBody)
+                .`when`().post("/api/books/$id/borrow").then()
+                .statusCode(HttpStatus.SC_BAD_REQUEST)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(JsonMatcher.jsonEqualTo(expectedResponse))
+
+    }
+
+    @Test
+    fun `POST Borrow - 400 BAD REQUEST for malformed request`() {
+
+    }
+
+    @Test
+    fun `POST Borrow - 400 BAD REQUEST for malformed ID`() {
+
+    }
+
+    //================================================================================
+    // /api/books/{id}/numberOfPages
+    //================================================================================
+
+    @Test
+    fun `PUT - replaces number of pages of book and responds with its resource representation`() {
+
+        every { bookDataStore.findById(id) } returns availableBookRecord
+
+
     }
 
 

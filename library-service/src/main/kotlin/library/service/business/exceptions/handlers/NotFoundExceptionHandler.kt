@@ -11,7 +11,7 @@ import javax.ws.rs.ext.Provider
 
 @Provider
 @ApplicationScoped
-class BookNotFoundExceptionHandler(
+class NotFoundExceptionHandler(
         private val clock: Clock) : ExceptionMapper<NotFoundException> {
 
     override fun toResponse(p0: NotFoundException?): Response {

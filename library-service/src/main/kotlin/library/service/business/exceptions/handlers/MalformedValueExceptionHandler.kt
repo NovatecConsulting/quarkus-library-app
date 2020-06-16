@@ -16,15 +16,16 @@ class MalformedValueExceptionHandler(
 
     override fun toResponse(p0: MalformedValueException?): Response? {
 
-        println("Message + ${p0?.message}")
+        val detailList = p0?.message!!.split(", ").toMutableList()
 
-        val errorDescription = p0?.message?.let {
+        val errorDescription = p0.message?.let {
             ErrorDescription(
                     status = HttpStatus.SC_BAD_REQUEST,
                     error = "Bad Request",
                     timestamp = OffsetDateTime.now(clock).toString(),
                     correlationId = "",
-                    message = it
+                    message = "The request's body is invalid. See details...",
+                    details = detailList.toList()
             )
         }
         return Response.status(HttpStatus.SC_BAD_REQUEST).entity(errorDescription).build()
