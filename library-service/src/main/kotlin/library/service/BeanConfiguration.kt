@@ -1,11 +1,13 @@
 
 import io.quarkus.arc.DefaultBean
+import io.quarkus.runtime.Startup
 import java.time.Clock
 import javax.enterprise.inject.Produces
 import javax.inject.Singleton
 
 @Singleton
-class AppConfiguration() {
+@Startup
+class BeanConfiguration() {
 
     @Produces
     @DefaultBean

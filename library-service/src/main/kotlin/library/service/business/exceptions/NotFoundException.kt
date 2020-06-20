@@ -5,4 +5,4 @@ package library.service.business.exceptions
  * in fact didn't. As an example this could be an required data set from a data
  * store.
  */
-open class NotFoundException(msg: String) : RuntimeException(msg)
+open class NotFoundException (msg: String) : RuntimeException(msg)

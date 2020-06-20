@@ -7,8 +7,8 @@ import library.service.business.books.domain.states.Available
 import library.service.business.books.domain.states.Borrowed
 import library.service.business.books.domain.types.BookId
 import library.service.business.books.domain.types.Borrower
-import library.service.business.books.exceptions.BookAlreadyBorrowedException
-import library.service.business.books.exceptions.BookAlreadyReturnedException
+import library.service.business.exceptions.BookAlreadyBorrowedException
+import library.service.business.exceptions.BookAlreadyReturnedException
 import library.service.business.events.EventDispatcher
 import library.service.business.exceptions.BookNotFoundException
 import org.assertj.core.api.Assertions

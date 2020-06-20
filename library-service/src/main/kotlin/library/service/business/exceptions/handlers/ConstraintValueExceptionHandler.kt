@@ -14,6 +14,7 @@ import javax.ws.rs.ext.Provider
 class ConstraintValueExceptionHandler(
         private val clock: Clock) : ExceptionMapper<ConstraintViolationException> {
 
+
     override fun toResponse(p0: ConstraintViolationException?): Response {
 
         println("Constraint Value Exception")

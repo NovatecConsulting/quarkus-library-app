@@ -9,8 +9,8 @@ import library.service.business.books.domain.types.Author
 import library.service.business.books.domain.types.BookId
 import library.service.business.books.domain.types.Borrower
 import library.service.business.books.domain.types.Title
-import library.service.business.books.exceptions.BookAlreadyBorrowedException
-import library.service.business.books.exceptions.BookAlreadyReturnedException
+import library.service.business.exceptions.BookAlreadyBorrowedException
+import library.service.business.exceptions.BookAlreadyReturnedException
 import java.time.OffsetDateTime
 import java.util.*
 import javax.inject.Singleton

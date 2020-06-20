@@ -25,7 +25,7 @@ class BooksController(
 ) {
 
     @GET
-    fun getBooks(): Response? {
+    fun getBooks(): Response {
         val allBooks = collection.getAllBooks()
         val bookResources = mutableListOf<BookResource>()
         for (record in allBooks){
@@ -35,7 +35,7 @@ class BooksController(
     }
 
     @POST
-    fun postBook(@Valid body: CreateBookRequest, @Context uriInfo: UriInfo): Response? {
+    fun postBook(@Valid body: CreateBookRequest, @Context uriInfo: UriInfo): Response {
         val book = Book(
                 isbn = Isbn13.parse(body.isbn!!),
                 title = Title(body.title!!),
@@ -48,7 +48,7 @@ class BooksController(
 
     @PUT
     @Path("/{id}/title")
-    fun putBookTitle(@PathParam id: UUID, body: UpdateTitleRequest): Response? {
+    fun putBookTitle(@PathParam id: UUID, body: UpdateTitleRequest): Response {
         val bookRecord = collection.updateBook(BookId(id)) {
             it.changeTitle(Title(body.title!!))
         }
@@ -57,7 +57,7 @@ class BooksController(
 
     @PUT
     @Path("/{id}/authors")
-    fun putBookAuthors(@PathParam id: UUID, body: UpdateAuthorsRequest): Response? {
+    fun putBookAuthors(@PathParam id: UUID, body: UpdateAuthorsRequest): Response {
         val bookRecord = collection.updateBook(BookId(id)) { it ->
             if (body.authors.isNullOrEmpty()) {
                 throw MalformedValueException("The field 'authors' must not be empty.")
@@ -70,7 +70,7 @@ class BooksController(
 
     @DELETE
     @Path("/{id}/authors")
-    fun deleteBookAuthors(@PathParam id: UUID): Response? {
+    fun deleteBookAuthors(@PathParam id: UUID): Response {
         val bookRecord = collection.updateBook(BookId(id)) {
             it.changeAuthors(emptyList())
         }
@@ -79,7 +79,7 @@ class BooksController(
 
     @PUT
     @Path("/{id}/numberOfPages")
-    fun putBookNumberOfPages(@PathParam id: UUID, @Valid body: UpdateNumberOfPagesRequest): Response? {
+    fun putBookNumberOfPages(@PathParam id: UUID, @Valid body: UpdateNumberOfPagesRequest): Response {
         val bookRecord = collection.updateBook(BookId(id)) {
             it.changeNumberOfPages(body.numberOfPages)
         }
@@ -88,7 +88,7 @@ class BooksController(
 
     @DELETE
     @Path("/{id}/numberOfPages")
-    fun deleteBookNumberOfPages(@PathParam id: UUID): Response? {
+    fun deleteBookNumberOfPages(@PathParam id: UUID): Response {
         val bookRecord = collection.updateBook(BookId(id)) {
             it.changeNumberOfPages(null)
         }
@@ -97,28 +97,28 @@ class BooksController(
 
     @GET
     @Path("/{id}")
-    fun getBook(@PathParam id: UUID): Response? {
+    fun getBook(@PathParam id: UUID): Response {
         val bookRecord = collection.getBook(BookId(id))
         return Response.status(Response.Status.OK).entity(assembler.toResource(bookRecord)).build()
     }
 
     @DELETE
     @Path("/{id}")
-    fun deleteBook(@PathParam id: UUID): Response? {
+    fun deleteBook(@PathParam id: UUID): Response {
         collection.removeBook(BookId(id))
         return Response.status(Response.Status.NO_CONTENT).build()
     }
 
     @POST
     @Path("/{id}/borrow")
-    fun postBorrowBook(@PathParam id: UUID, @Valid body: BorrowBookRequest): Response? {
+    fun postBorrowBook(@PathParam id: UUID, @Valid body: BorrowBookRequest): Response {
         val bookRecord = collection.borrowBook(BookId(id), Borrower(body.borrower!!))
         return Response.status(Response.Status.OK).entity(assembler.toResource(bookRecord)).build()
     }
 
     @POST
     @Path("/{id}/return")
-    fun postReturnBook(@PathParam id: UUID): Response? {
+    fun postReturnBook(@PathParam id: UUID): Response {
         val bookRecord = collection.returnBook(BookId(id))
         return Response.status(Response.Status.OK).entity(assembler.toResource(bookRecord)).build()
     }
