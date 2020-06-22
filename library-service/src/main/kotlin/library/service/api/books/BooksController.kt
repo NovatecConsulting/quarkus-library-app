@@ -49,8 +49,11 @@ class BooksController(
     @PUT
     @Path("/{id}/title")
     fun putBookTitle(@PathParam id: UUID, body: UpdateTitleRequest): Response {
-        val bookRecord = collection.updateBook(BookId(id)) {
-            it.changeTitle(Title(body.title!!))
+        val bookRecord = collection.updateBook(BookId(id)) { it ->
+            if (body.title.isNullOrBlank()) {
+                throw MalformedValueException("The field 'title' must not be blank.")
+            }
+            it.changeTitle(Title(body.title))
         }
         return Response.status(Response.Status.OK).entity(assembler.toResource(bookRecord)).build()
     }

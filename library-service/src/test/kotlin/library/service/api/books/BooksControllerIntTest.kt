@@ -583,6 +583,90 @@ internal class BooksControllerIntTest {
 
         every { bookDataStore.findById(id) } returns availableBookRecord
 
+        val requestBody = """
+                    {
+                        "title": "New Title"
+                    }
+                """
+
+        val expectedResponse = """
+                    {
+                        "isbn": "9780132350884",
+                        "title": "New Title",
+                        "authors": [
+                            "Robert C. Martin",
+                            "Dean Wampler"
+                        ],
+                        "numberOfPages": 462,
+                        "borrowed": null
+                    }
+                """
+
+        given()
+                .contentType(MediaType.APPLICATION_JSON).body(requestBody)
+                .`when`().put("/api/books/$id/title").then()
+                .statusCode(HttpStatus.SC_OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(JsonMatcher.jsonEqualTo(expectedResponse))
+
+    }
+
+    @Test
+    fun `PUT Title - 404 NOT FOUND for non-existing book`() {
+
+        val requestBody = """
+                    {
+                        "title": "New Title"
+                    }
+                """
+
+        val expectedResponse = """
+                    {
+                        "status": 404,
+                        "error": "Not Found",
+                        "timestamp": "2017-08-20T12:34:56.789Z",
+                        "message": "The book with ID: $id does not exist!"
+                    }
+                """
+
+        given()
+                .contentType(MediaType.APPLICATION_JSON).body(requestBody)
+                .`when`().put("/api/books/$id/title").then()
+                .statusCode(HttpStatus.SC_NOT_FOUND)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(JsonMatcher.jsonEqualTo(expectedResponse))
+
+    }
+
+    @Test
+    fun `PUT Title - 400 BAD REQUEST for missing required properties`() {
+
+        every { bookDataStore.findById(id) } returns availableBookRecord
+
+        val requestBody = """
+                    {
+                    }
+                """
+
+        val expectedResponse = """
+                    {
+                        "status": 400,
+                        "error": "Bad Request",
+                        "timestamp": "2017-08-20T12:34:56.789Z",
+                        "message": "The request's body is invalid. See details...",
+                        "details": [
+                            "The field 'title' must not be blank."
+                        ]
+                    }
+                """
+
+        given()
+                .contentType(MediaType.APPLICATION_JSON).body(requestBody)
+                .`when`().put("/api/books/$id/title").then()
+                .statusCode(HttpStatus.SC_BAD_REQUEST)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(JsonMatcher.jsonEqualTo(expectedResponse))
+
 
     }
 

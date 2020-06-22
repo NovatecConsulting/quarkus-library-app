@@ -1,6 +1,10 @@
 package library.service.api.books.payload
 
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 import utils.classification.UnitTest
 
 @UnitTest
@@ -17,13 +21,13 @@ internal class CreateBookRequestTest : AbstractPayloadTest<CreateBookRequest>() 
         @Nested
         inner class `for isbn` {
 
-            /*@ValueSource(strings = ["0575081244", "978-0575081244", "9780575081244"])
+            @ValueSource(strings = ["0575081244", "978-0575081244", "9780575081244"])
             @ParameterizedTest
             fun `valid value examples`(isbn: String) {
                 assertThat(validate(isbn)).isEmpty()
-            }*/
+            }
 
-            /*@Nested
+            @Nested
             inner class `invalid value examples` {
 
                 private val blankError = "must not be blank"
@@ -34,7 +38,7 @@ internal class CreateBookRequestTest : AbstractPayloadTest<CreateBookRequest>() 
                     assertThat(validate(null)).containsOnly(blankError)
                 }
 
-            }*/
+            }
 
             private fun validate(isbn: String?) = validate(CreateBookRequest(isbn = isbn, title = "Hello World"))
         }
