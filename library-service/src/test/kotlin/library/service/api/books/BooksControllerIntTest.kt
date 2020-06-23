@@ -210,7 +210,24 @@ internal class BooksControllerIntTest {
 
     @Test
     fun `POST - 400 BAD REQUEST for malformed request`() {
+        val requestBody = """
+                """
 
+        val expectedResponse = """
+                    {
+                        "status": 400,
+                        "error": "Bad Request",
+                        "timestamp": "2017-08-20T12:34:56.789Z",
+                        "message": "The request's body could not be read. It is either empty or malformed."
+                    }
+                """
+
+        given()
+                .contentType(MediaType.APPLICATION_JSON).body(requestBody)
+                .`when`().post("/api/books").then()
+                .statusCode(HttpStatus.SC_BAD_REQUEST)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(JsonMatcher.jsonEqualTo(expectedResponse))
     }
 
     //================================================================================
@@ -262,14 +279,31 @@ internal class BooksControllerIntTest {
 
         given()
                 .`when`().get("/api/books/$id")
-                .then().contentType(MediaType.APPLICATION_JSON)
+                .then().statusCode(HttpStatus.SC_NOT_FOUND)
+                .contentType(MediaType.APPLICATION_JSON)
                 .body(JsonMatcher.jsonEqualTo(expectedResponse))
-
     }
 
     @Test
     fun `GET - 400 BAD REQUEST for malformed ID`() {
 
+        val expectedResponse = """
+                {
+                    "status": 400,
+                    "error": "Bad Request",
+                    "timestamp":"2017-08-20T12:34:56.789Z",
+                    "message": "The request's body is invalid. See details...",
+                    "details": [
+                        "The request's 'id' parameter is malformed."
+                    ]
+                }
+            """
+
+        given()
+                .`when`().get("/api/books/malformed-id")
+                .then().statusCode(HttpStatus.SC_BAD_REQUEST)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(JsonMatcher.jsonEqualTo(expectedResponse))
     }
 
     @Test
@@ -306,6 +340,23 @@ internal class BooksControllerIntTest {
     @Test
     fun `DELETE - 400 BAD REQUEST for malformed ID`() {
 
+        val expectedResponse = """
+                {
+                    "status": 400,
+                    "error": "Bad Request",
+                    "timestamp":"2017-08-20T12:34:56.789Z",
+                    "message": "The request's body is invalid. See details...",
+                    "details": [
+                        "The request's 'id' parameter is malformed."
+                    ]
+                }
+            """
+
+        given()
+                .`when`().delete("/api/books/malformed-id")
+                .then().statusCode(HttpStatus.SC_BAD_REQUEST)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(JsonMatcher.jsonEqualTo(expectedResponse))
     }
 
     //================================================================================
@@ -571,6 +622,31 @@ internal class BooksControllerIntTest {
 
     @Test
     fun `POST Borrow - 400 BAD REQUEST for malformed ID`() {
+
+        val requestBody = """
+                { 
+                    "borrower": "Uncle Bob" 
+                }
+                """
+
+        val expectedResponse = """
+                {
+                    "status": 400,
+                    "error": "Bad Request",
+                    "timestamp":"2017-08-20T12:34:56.789Z",
+                    "message": "The request's body is invalid. See details...",
+                    "details": [
+                        "The request's 'id' parameter is malformed."
+                    ]
+                }
+            """
+
+        given()
+                .contentType(MediaType.APPLICATION_JSON).body(requestBody)
+                .`when`().post("/api/books/malformed-id/borrow")
+                .then().statusCode(HttpStatus.SC_BAD_REQUEST)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(JsonMatcher.jsonEqualTo(expectedResponse))
 
     }
 

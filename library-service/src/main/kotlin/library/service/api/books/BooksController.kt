@@ -10,10 +10,8 @@ import org.jboss.resteasy.annotations.jaxrs.PathParam
 import java.util.*
 import javax.validation.Valid
 import javax.ws.rs.*
-import javax.ws.rs.core.Context
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
-import javax.ws.rs.core.UriInfo
 
 
 @Path("/api/books")
@@ -35,7 +33,7 @@ class BooksController(
     }
 
     @POST
-    fun postBook(@Valid body: CreateBookRequest, @Context uriInfo: UriInfo): Response {
+    fun postBook(@Valid body: CreateBookRequest): Response {
         val book = Book(
                 isbn = Isbn13.parse(body.isbn!!),
                 title = Title(body.title!!),
@@ -100,23 +98,38 @@ class BooksController(
 
     @GET
     @Path("/{id}")
-    fun getBook(@PathParam id: UUID): Response {
-        val bookRecord = collection.getBook(BookId(id))
-        return Response.status(Response.Status.OK).entity(assembler.toResource(bookRecord)).build()
+    fun getBook(@PathParam id: String): Response? {
+        try {
+            val uuid = UUID.fromString(id)
+            val bookRecord = collection.getBook(BookId(uuid))
+            return Response.status(Response.Status.OK).entity(assembler.toResource(bookRecord)).build()
+        } catch (e: IllegalArgumentException) {
+            throw MalformedValueException("The request's 'id' parameter is malformed.")
+        }
     }
 
     @DELETE
     @Path("/{id}")
-    fun deleteBook(@PathParam id: UUID): Response {
-        collection.removeBook(BookId(id))
-        return Response.status(Response.Status.NO_CONTENT).build()
+    fun deleteBook(@PathParam id: String): Response {
+        try {
+            val uuid = UUID.fromString(id)
+            collection.removeBook(BookId(uuid))
+            return Response.status(Response.Status.NO_CONTENT).build()
+        } catch (e: IllegalArgumentException) {
+            throw MalformedValueException("The request's 'id' parameter is malformed.")
+        }
     }
 
     @POST
     @Path("/{id}/borrow")
-    fun postBorrowBook(@PathParam id: UUID, @Valid body: BorrowBookRequest): Response {
-        val bookRecord = collection.borrowBook(BookId(id), Borrower(body.borrower!!))
-        return Response.status(Response.Status.OK).entity(assembler.toResource(bookRecord)).build()
+    fun postBorrowBook(@PathParam id: String, @Valid body: BorrowBookRequest): Response? {
+        try {
+            val uuid = UUID.fromString(id)
+            val bookRecord = collection.borrowBook(BookId(uuid), Borrower(body.borrower!!))
+            return Response.status(Response.Status.OK).entity(assembler.toResource(bookRecord)).build()
+        } catch (e: IllegalArgumentException) {
+            throw MalformedValueException("The request's 'id' parameter is malformed.")
+        }
     }
 
     @POST
