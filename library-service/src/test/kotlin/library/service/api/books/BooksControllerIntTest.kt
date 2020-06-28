@@ -19,6 +19,7 @@ import utils.JsonMatcher
 import utils.MutableClock
 import utils.classification.IntegrationTest
 import java.time.OffsetDateTime
+import java.util.*
 import javax.enterprise.inject.Produces
 import javax.inject.Inject
 import javax.ws.rs.core.MediaType
@@ -36,6 +37,7 @@ internal class BooksControllerIntTest {
     private final val book = Books.CLEAN_CODE
     val availableBookRecord = availableBook(id, book)
     val borrowedBookRecord = borrowedBook(id, book, "Uncle Bob", "2017-08-20T12:34:56.789Z")
+    val correlationId = UUID.randomUUID().toString()
 
 
     @Produces
@@ -210,6 +212,7 @@ internal class BooksControllerIntTest {
 
     @Test
     fun `POST - 400 BAD REQUEST for malformed request`() {
+
         val requestBody = """
                 """
 
@@ -218,12 +221,14 @@ internal class BooksControllerIntTest {
                         "status": 400,
                         "error": "Bad Request",
                         "timestamp": "2017-08-20T12:34:56.789Z",
+                        "correlationId": "$correlationId",
                         "message": "The request's body could not be read. It is either empty or malformed."
                     }
                 """
 
         given()
                 .contentType(MediaType.APPLICATION_JSON).body(requestBody)
+                .header("X-Correlation-ID", correlationId)
                 .`when`().post("/api/books").then()
                 .statusCode(HttpStatus.SC_BAD_REQUEST)
                 .contentType(MediaType.APPLICATION_JSON)
