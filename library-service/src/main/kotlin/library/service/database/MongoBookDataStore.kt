@@ -57,7 +57,6 @@ class MongoBookDataStore(
     }
 
     override fun findById(id: BookId): BookRecord? {
-        println("LOOKING FOR ID $id")
         val book = getCollection().find(eq("_id", UUID.fromString(id.toString()))).first()
         if (book != null) {
             return bookDocumentToRecordMapper.map(book)

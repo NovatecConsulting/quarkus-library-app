@@ -1,6 +1,7 @@
 
 import library.service.api.ErrorDescription
 import library.service.business.exceptions.NotFoundException
+import library.service.correlation.CorrelationIdHolder
 import org.apache.http.HttpStatus
 import java.time.Clock
 import java.time.OffsetDateTime
@@ -12,6 +13,7 @@ import javax.ws.rs.ext.Provider
 @Provider
 @ApplicationScoped
 class NotFoundExceptionHandler (
+        private val correlationIdHolder: CorrelationIdHolder,
         private val clock: Clock) : ExceptionMapper<NotFoundException> {
 
     override fun toResponse(p0: NotFoundException?): Response {
@@ -23,7 +25,7 @@ class NotFoundExceptionHandler (
                     status = HttpStatus.SC_NOT_FOUND,
                     error = "Not Found",
                     timestamp = OffsetDateTime.now(clock).toString(),
-                    correlationId = "",
+                    correlationId = correlationIdHolder.get(),
                     message = it
             )
         }

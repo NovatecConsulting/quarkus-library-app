@@ -195,6 +195,7 @@ internal class BooksControllerIntTest {
                         "status": 400,
                         "error": "Bad Request",
                         "timestamp": "2017-08-20T12:34:56.789Z",
+                        "correlationId": "$correlationId",
                         "message": "The request's body is invalid. See details...",
                         "details": [
                             "The field isbn must match \"(\\d{3}-?)?\\d{10}\""
@@ -203,6 +204,7 @@ internal class BooksControllerIntTest {
                 """
 
         given()
+                .header("X-Correlation-ID", correlationId)
                 .contentType(MediaType.APPLICATION_JSON).body(requestBody)
                 .`when`().post("/api/books").then()
                 .statusCode(HttpStatus.SC_BAD_REQUEST)
@@ -252,6 +254,7 @@ internal class BooksControllerIntTest {
                         "status": 400,
                         "error": "Bad Request",
                         "timestamp":"2017-08-20T12:34:56.789Z",
+                        "correlationId": "$correlationId",
                         "message": "The request's body is invalid. See details...",
                         "details": [
                             "The field isbn must not be blank",
@@ -262,6 +265,7 @@ internal class BooksControllerIntTest {
 
         given()
                 .contentType(MediaType.APPLICATION_JSON).body(requestBody)
+                .header("X-Correlation-ID", correlationId)
                 .`when`().post("/api/books").then()
                 .statusCode(HttpStatus.SC_BAD_REQUEST)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -278,11 +282,13 @@ internal class BooksControllerIntTest {
                     "status": 404,
                     "error": "Not Found",
                     "timestamp":"2017-08-20T12:34:56.789Z",
+                    "correlationId": "$correlationId",
                     "message": "The book with ID: $id does not exist!"
                 }
             """
 
         given()
+                .header("X-Correlation-ID", correlationId)
                 .`when`().get("/api/books/$id")
                 .then().statusCode(HttpStatus.SC_NOT_FOUND)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -297,6 +303,7 @@ internal class BooksControllerIntTest {
                     "status": 400,
                     "error": "Bad Request",
                     "timestamp":"2017-08-20T12:34:56.789Z",
+                    "correlationId": "$correlationId",
                     "message": "The request's body is invalid. See details...",
                     "details": [
                         "The request's 'id' parameter is malformed."
@@ -305,6 +312,7 @@ internal class BooksControllerIntTest {
             """
 
         given()
+                .header("X-Correlation-ID", correlationId)
                 .`when`().get("/api/books/malformed-id")
                 .then().statusCode(HttpStatus.SC_BAD_REQUEST)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -330,11 +338,13 @@ internal class BooksControllerIntTest {
                         "status": 404,
                         "error": "Not Found",
                         "timestamp":"2017-08-20T12:34:56.789Z",
+                        "correlationId": "$correlationId",
                         "message": "The book with ID: $id does not exist!"
                     }
                 """
 
         given()
+                .header("X-Correlation-ID", correlationId)
                 .`when`().delete("/api/books/$id").then()
                 .statusCode(HttpStatus.SC_NOT_FOUND)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -350,6 +360,7 @@ internal class BooksControllerIntTest {
                     "status": 400,
                     "error": "Bad Request",
                     "timestamp":"2017-08-20T12:34:56.789Z",
+                    "correlationId": "$correlationId",
                     "message": "The request's body is invalid. See details...",
                     "details": [
                         "The request's 'id' parameter is malformed."
@@ -358,6 +369,7 @@ internal class BooksControllerIntTest {
             """
 
         given()
+                .header("X-Correlation-ID", correlationId)
                 .`when`().delete("/api/books/malformed-id")
                 .then().statusCode(HttpStatus.SC_BAD_REQUEST)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -416,11 +428,13 @@ internal class BooksControllerIntTest {
                     "status": 404,
                     "error": "Not Found",
                     "timestamp":"2017-08-20T12:34:56.789Z",
+                    "correlationId": "$correlationId",
                     "message": "The book with ID: $id does not exist!"
                 }
             """
 
         given()
+                .header("X-Correlation-ID", correlationId)
                 .contentType(MediaType.APPLICATION_JSON).body(requestBody)
                 .`when`().put("/api/books/$id/authors")
                 .then().contentType(MediaType.APPLICATION_JSON)
@@ -442,6 +456,7 @@ internal class BooksControllerIntTest {
                     "status": 400,
                     "error": "Bad Request",
                     "timestamp":"2017-08-20T12:34:56.789Z",
+                    "correlationId": "$correlationId",
                     "message": "The request's body is invalid. See details...",
                     "details": [
                         "The field 'authors' must not be empty."
@@ -450,6 +465,7 @@ internal class BooksControllerIntTest {
             """
 
         given()
+                .header("X-Correlation-ID", correlationId)
                 .contentType(MediaType.APPLICATION_JSON).body(requestBody)
                 .`when`().put("/api/books/$id/authors")
                 .then().contentType(MediaType.APPLICATION_JSON)
@@ -486,11 +502,13 @@ internal class BooksControllerIntTest {
                     "status": 404,
                     "error": "Not Found",
                     "timestamp":"2017-08-20T12:34:56.789Z",
+                    "correlationId": "$correlationId",
                     "message": "The book with ID: $id does not exist!"
                 }
             """
 
         given()
+                .header("X-Correlation-ID", correlationId)
                 .`when`().delete("/api/books/$id/authors")
                 .then().contentType(MediaType.APPLICATION_JSON)
                 .body(JsonMatcher.jsonEqualTo(expectedResponse))
@@ -552,11 +570,13 @@ internal class BooksControllerIntTest {
                         "status": 409,
                         "error": "Conflict",
                         "timestamp": "2017-08-20T12:34:56.789Z",
+                        "correlationId": "$correlationId",
                         "message": "The book with ID: $id is already borrowed!"
                     }   
                 """
 
         given()
+                .header("X-Correlation-ID", correlationId)
                 .contentType(MediaType.APPLICATION_JSON).body(requestBody)
                 .`when`().post("/api/books/$id/borrow").then()
                 .statusCode(HttpStatus.SC_CONFLICT)
@@ -578,11 +598,13 @@ internal class BooksControllerIntTest {
                         "status": 404,
                         "error": "Not Found",
                         "timestamp": "2017-08-20T12:34:56.789Z",
+                        "correlationId": "$correlationId",
                         "message": "The book with ID: $id does not exist!"
                     }   
                 """
 
         given()
+                .header("X-Correlation-ID", correlationId)
                 .contentType(MediaType.APPLICATION_JSON).body(requestBody)
                 .`when`().post("/api/books/$id/borrow").then()
                 .statusCode(HttpStatus.SC_NOT_FOUND)
@@ -604,6 +626,7 @@ internal class BooksControllerIntTest {
                         "status": 400,
                         "error": "Bad Request",
                         "timestamp": "2017-08-20T12:34:56.789Z",
+                        "correlationId": "$correlationId",
                         "message": "The request's body is invalid. See details...",
                         "details": [
                             "The field borrower must not be null"
@@ -612,6 +635,7 @@ internal class BooksControllerIntTest {
                 """
 
         given()
+                .header("X-Correlation-ID", correlationId)
                 .contentType(MediaType.APPLICATION_JSON).body(requestBody)
                 .`when`().post("/api/books/$id/borrow").then()
                 .statusCode(HttpStatus.SC_BAD_REQUEST)
@@ -622,6 +646,27 @@ internal class BooksControllerIntTest {
 
     @Test
     fun `POST Borrow - 400 BAD REQUEST for malformed request`() {
+
+        val requestBody = """
+                """
+
+        val expectedResponse = """
+                    {
+                        "status": 400,
+                        "error": "Bad Request",
+                        "timestamp": "2017-08-20T12:34:56.789Z",
+                        "correlationId": "$correlationId",
+                        "message": "The request's body could not be read. It is either empty or malformed."
+                    }
+                """
+
+        given()
+                .contentType(MediaType.APPLICATION_JSON).body(requestBody)
+                .header("X-Correlation-ID", correlationId)
+                .`when`().post("/api/books/$id/borrow").then()
+                .statusCode(HttpStatus.SC_BAD_REQUEST)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(JsonMatcher.jsonEqualTo(expectedResponse))
 
     }
 
@@ -639,6 +684,7 @@ internal class BooksControllerIntTest {
                     "status": 400,
                     "error": "Bad Request",
                     "timestamp":"2017-08-20T12:34:56.789Z",
+                    "correlationId": "$correlationId",
                     "message": "The request's body is invalid. See details...",
                     "details": [
                         "The request's 'id' parameter is malformed."
@@ -647,6 +693,7 @@ internal class BooksControllerIntTest {
             """
 
         given()
+                .header("X-Correlation-ID", correlationId)
                 .contentType(MediaType.APPLICATION_JSON).body(requestBody)
                 .`when`().post("/api/books/malformed-id/borrow")
                 .then().statusCode(HttpStatus.SC_BAD_REQUEST)
@@ -706,11 +753,13 @@ internal class BooksControllerIntTest {
                         "status": 404,
                         "error": "Not Found",
                         "timestamp": "2017-08-20T12:34:56.789Z",
+                        "correlationId": "$correlationId",
                         "message": "The book with ID: $id does not exist!"
                     }
                 """
 
         given()
+                .header("X-Correlation-ID", correlationId)
                 .contentType(MediaType.APPLICATION_JSON).body(requestBody)
                 .`when`().put("/api/books/$id/title").then()
                 .statusCode(HttpStatus.SC_NOT_FOUND)
@@ -734,6 +783,7 @@ internal class BooksControllerIntTest {
                         "status": 400,
                         "error": "Bad Request",
                         "timestamp": "2017-08-20T12:34:56.789Z",
+                        "correlationId": "$correlationId",
                         "message": "The request's body is invalid. See details...",
                         "details": [
                             "The field 'title' must not be blank."
@@ -742,12 +792,12 @@ internal class BooksControllerIntTest {
                 """
 
         given()
+                .header("X-Correlation-ID", correlationId)
                 .contentType(MediaType.APPLICATION_JSON).body(requestBody)
                 .`when`().put("/api/books/$id/title").then()
                 .statusCode(HttpStatus.SC_BAD_REQUEST)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(JsonMatcher.jsonEqualTo(expectedResponse))
-
 
     }
 

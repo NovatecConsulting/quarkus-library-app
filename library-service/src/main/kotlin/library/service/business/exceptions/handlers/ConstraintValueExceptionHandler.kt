@@ -1,5 +1,6 @@
 
 import library.service.api.ErrorDescription
+import library.service.correlation.CorrelationIdHolder
 import org.apache.http.HttpStatus
 import java.time.Clock
 import java.time.OffsetDateTime
@@ -12,6 +13,7 @@ import javax.ws.rs.ext.Provider
 @Provider
 @ApplicationScoped
 class ConstraintValueExceptionHandler(
+        private val correlationIdHolder: CorrelationIdHolder,
         private val clock: Clock) : ExceptionMapper<ConstraintViolationException> {
 
 
@@ -35,7 +37,7 @@ class ConstraintValueExceptionHandler(
                 status = HttpStatus.SC_BAD_REQUEST,
                 error = "Bad Request",
                 timestamp = OffsetDateTime.now(clock).toString(),
-                correlationId = "",
+                correlationId = correlationIdHolder.get(),
                 message = "The request's body is invalid. See details...",
                 details = detailList.toList()
         )
