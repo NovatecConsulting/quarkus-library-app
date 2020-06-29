@@ -15,9 +15,9 @@ class IllegalArgumentExceptionHandler (
         private val correlationIdHolder: CorrelationIdHolder,
         private val clock: Clock) : ExceptionMapper<IllegalArgumentException> {
 
-    override fun toResponse(p0: IllegalArgumentException?): Response {
+    override fun toResponse(illegalArgumentException: IllegalArgumentException): Response {
 
-        val errorDescription = p0?.message?.let {
+        val errorDescription = illegalArgumentException.message?.let {
             ErrorDescription(
                     status = HttpStatus.SC_BAD_REQUEST,
                     error = "Bad Request",

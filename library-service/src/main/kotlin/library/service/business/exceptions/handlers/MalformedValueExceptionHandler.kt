@@ -16,11 +16,11 @@ class MalformedValueExceptionHandler(
         private val correlationIdHolder: CorrelationIdHolder,
         private val clock: Clock) : ExceptionMapper<MalformedValueException> {
 
-    override fun toResponse(p0: MalformedValueException?): Response? {
+    override fun toResponse(malformedValueException: MalformedValueException): Response? {
 
-        val detailList = p0?.message!!.split(", ").toMutableList()
+        val detailList = malformedValueException.message!!.split(", ").toMutableList()
 
-        val errorDescription = p0.message?.let {
+        val errorDescription = malformedValueException.message?.let {
             ErrorDescription(
                     status = HttpStatus.SC_BAD_REQUEST,
                     error = "Bad Request",

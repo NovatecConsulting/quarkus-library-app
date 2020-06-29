@@ -17,11 +17,9 @@ class ConstraintValueExceptionHandler(
         private val clock: Clock) : ExceptionMapper<ConstraintViolationException> {
 
 
-    override fun toResponse(p0: ConstraintViolationException?): Response {
+    override fun toResponse(constraintViolationException: ConstraintViolationException): Response {
 
-        println("Constraint Value Exception")
-
-        val detailList = p0?.message!!.split(", ").toMutableList()
+        val detailList = constraintViolationException.message!!.split(", ").toMutableList()
         val it = detailList.listIterator()
 
         while (it.hasNext()) {

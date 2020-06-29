@@ -16,10 +16,9 @@ class NotPossibleExceptionHandler(
         private val correlationIdHolder: CorrelationIdHolder,
         private val clock: Clock) : ExceptionMapper<NotPossibleException> {
 
-    override fun toResponse(p0: NotPossibleException?): Response {
-        println("Message + ${p0?.message}")
+    override fun toResponse(notPossibleException: NotPossibleException): Response {
 
-        val errorDescription = p0?.message?.let {
+        val errorDescription = notPossibleException.message?.let {
             ErrorDescription(
                     status = HttpStatus.SC_CONFLICT,
                     error = "Conflict",

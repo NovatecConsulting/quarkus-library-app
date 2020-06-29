@@ -46,13 +46,7 @@ class BookCollection(
         val bookId = idGenerator.generate()
         val bookRecord = dataStore.createOrUpdate(BookRecord(bookId, book))
 
-        println("clock = $clock")
-        println("bookId = $bookId")
-        println("bookRecord = $bookRecord")
-
         dispatch(bookAddedEvent(bookRecord))
-
-        println(book)
 
         return bookRecord
     }

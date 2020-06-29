@@ -16,11 +16,9 @@ class NotFoundExceptionHandler (
         private val correlationIdHolder: CorrelationIdHolder,
         private val clock: Clock) : ExceptionMapper<NotFoundException> {
 
-    override fun toResponse(p0: NotFoundException?): Response {
+    override fun toResponse(notFoundException: NotFoundException): Response {
 
-        println("Message + ${p0?.message}")
-
-        val errorDescription = p0?.message?.let {
+        val errorDescription = notFoundException.message?.let {
             ErrorDescription(
                     status = HttpStatus.SC_NOT_FOUND,
                     error = "Not Found",

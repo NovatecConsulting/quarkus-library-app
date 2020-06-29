@@ -19,8 +19,8 @@ class CorrelationIdFilter(
 ): ContainerRequestFilter {
 
 
-    override fun filter(p0: ContainerRequestContext?) {
-        val correlationId = p0?.getHeaderString(correlationIdHeader)
+    override fun filter(containerRequestContext: ContainerRequestContext) {
+        val correlationId = containerRequestContext.getHeaderString(correlationIdHeader)
 
         if (correlationId != null) {
             correlationIdHolder.set(correlationId)
@@ -35,17 +35,18 @@ class CorrelationIdFilter(
 class CorrelationIdResponseFilter(
         private val correlationIdHolder: CorrelationIdHolder
 ): ContainerResponseFilter {
-    override fun filter(p0: ContainerRequestContext?, p1: ContainerResponseContext?) {
+    override fun filter(containerRequestContext: ContainerRequestContext,
+                        containerResponseContext: ContainerResponseContext) {
 
         correlationIdHolder.remove()
-        var correlationId = p0?.getHeaderString(correlationIdHeader)
+        var correlationId = containerRequestContext.getHeaderString(correlationIdHeader)
 
         if (correlationId == null) {
             correlationId = CorrelationId.generate()
         }
 
         correlationIdHolder.set(correlationId)
-        p1?.headers?.add(correlationIdHeader, correlationId)
+        containerResponseContext.headers.add(correlationIdHeader, correlationId)
     }
 
 }
