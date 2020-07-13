@@ -1,3 +1,23 @@
-quarkus:
-  mongodb:
-    connection-string: mongodb://localhost:27017
+'%dev':
+  quarkus:
+    mongodb:
+      connection-string: mongodb://localhost:27017
+    security:
+      users:
+        file:
+          plain-text: true
+          enabled: true
+          users: library-users.yaml
+          roles: library-roles.yaml
+
+'%test':
+  quarkus:
+    security:
+      users:
+        file:
+          plain-text: true
+          enabled: true
+          users: library-users.yaml
+          roles: library-roles.yaml
+
+

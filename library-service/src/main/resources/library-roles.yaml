@@ -1,0 +1,4 @@
+
+admin: admin, curator, user
+curator: curator, user
+user: user

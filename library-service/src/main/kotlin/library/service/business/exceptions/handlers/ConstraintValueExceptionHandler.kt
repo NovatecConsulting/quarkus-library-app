@@ -1,4 +1,3 @@
-
 import library.service.api.ErrorDescription
 import library.service.correlation.CorrelationIdHolder
 import org.apache.http.HttpStatus
@@ -13,8 +12,9 @@ import javax.ws.rs.ext.Provider
 @Provider
 @ApplicationScoped
 class ConstraintValueExceptionHandler(
-        private val correlationIdHolder: CorrelationIdHolder,
-        private val clock: Clock) : ExceptionMapper<ConstraintViolationException> {
+    private val correlationIdHolder: CorrelationIdHolder,
+    private val clock: Clock
+) : ExceptionMapper<ConstraintViolationException> {
 
 
     override fun toResponse(constraintViolationException: ConstraintViolationException): Response {
@@ -24,7 +24,7 @@ class ConstraintValueExceptionHandler(
 
         while (it.hasNext()) {
 
-            val message = it.next().replaceFirst(":","")
+            val message = it.next().replaceFirst(":", "")
             val subString = message.substringAfterLast(".")
 
             it.set("The field $subString")
@@ -32,12 +32,12 @@ class ConstraintValueExceptionHandler(
         }
 
         val errorDescription = ErrorDescription(
-                status = HttpStatus.SC_BAD_REQUEST,
-                error = "Bad Request",
-                timestamp = OffsetDateTime.now(clock).toString(),
-                correlationId = correlationIdHolder.get(),
-                message = "The request's body is invalid. See details...",
-                details = detailList.toList()
+            status = HttpStatus.SC_BAD_REQUEST,
+            error = "Bad Request",
+            timestamp = OffsetDateTime.now(clock).toString(),
+            correlationId = correlationIdHolder.get(),
+            message = "The request's body is invalid. See details...",
+            details = detailList.toList()
         )
         return Response.status(HttpStatus.SC_BAD_REQUEST).entity(errorDescription).build()
     }

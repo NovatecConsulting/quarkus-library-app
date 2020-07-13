@@ -18,11 +18,13 @@ class CorrelationIdFilter(
         private val correlationIdHolder: CorrelationIdHolder
 ): ContainerRequestFilter {
 
-
     override fun filter(containerRequestContext: ContainerRequestContext) {
-        val correlationId = containerRequestContext.getHeaderString(correlationIdHeader)
+        var correlationId = containerRequestContext.getHeaderString(correlationIdHeader)
 
         if (correlationId != null) {
+            correlationIdHolder.set(correlationId)
+        } else {
+            correlationId = CorrelationId.generate()
             correlationIdHolder.set(correlationId)
         }
     }

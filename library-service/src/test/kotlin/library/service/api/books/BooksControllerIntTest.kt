@@ -35,10 +35,9 @@ internal class BooksControllerIntTest {
     lateinit var clock: MutableClock
     private final val id = BookId.generate()
     private final val book = Books.CLEAN_CODE
-    val availableBookRecord = availableBook(id, book)
-    val borrowedBookRecord = borrowedBook(id, book, "Uncle Bob", "2017-08-20T12:34:56.789Z")
-    val correlationId = UUID.randomUUID().toString()
-
+    private final val availableBookRecord = availableBook(id, book)
+    private val borrowedBookRecord = borrowedBook(id, book, "Uncle Bob", "2017-08-20T12:34:56.789Z")
+    private val correlationId = UUID.randomUUID().toString()
 
     @Produces
     @Mock
@@ -85,32 +84,32 @@ internal class BooksControllerIntTest {
         """
 
         val borrowedBook = borrowedBook(
-                id = BookId.from("53397dc0-932d-4198-801a-3e00b2742ba7"),
-                book = Books.CLEAN_CODER,
-                borrowedBy = "Uncle Bob",
-                borrowedOn = "2017-08-20T12:34:56.789Z"
+            id = BookId.from("53397dc0-932d-4198-801a-3e00b2742ba7"),
+            book = Books.CLEAN_CODER,
+            borrowedBy = "Uncle Bob",
+            borrowedOn = "2017-08-20T12:34:56.789Z"
         )
 
         every { bookDataStore.findAll() } returns listOf(borrowedBook)
 
-        given()
-                .`when`().get("/api/books")
-                .then().contentType(MediaType.APPLICATION_JSON)
-                .body(JsonMatcher.jsonEqualTo(expectedResponse))
+        given().auth().basic("user", "us3r")
+            .`when`().get("/api/books")
+            .then().contentType(MediaType.APPLICATION_JSON)
+            .body(JsonMatcher.jsonEqualTo(expectedResponse))
     }
 
     @Test
     fun `GET - when there are books, the response contains them with all relevant links`() {
         val availableBook = availableBook(
-                id = BookId.from("883a2931-325b-4482-8972-8cb6f7d33816"),
-                book = Books.CLEAN_CODE
+            id = BookId.from("883a2931-325b-4482-8972-8cb6f7d33816"),
+            book = Books.CLEAN_CODE
         )
 
         val borrowedBook = borrowedBook(
-                id = BookId.from("53397dc0-932d-4198-801a-3e00b2742ba7"),
-                book = Books.CLEAN_CODER,
-                borrowedBy = "Uncle Bob",
-                borrowedOn = "2017-08-20T12:34:56.789Z"
+            id = BookId.from("53397dc0-932d-4198-801a-3e00b2742ba7"),
+            book = Books.CLEAN_CODER,
+            borrowedBy = "Uncle Bob",
+            borrowedOn = "2017-08-20T12:34:56.789Z"
         )
 
         every { bookDataStore.findAll() } returns listOf(availableBook, borrowedBook)
@@ -142,10 +141,10 @@ internal class BooksControllerIntTest {
             ]
         """
 
-        given()
-                .`when`().get("/api/books")
-                .then().contentType(MediaType.APPLICATION_JSON)
-                .body(JsonMatcher.jsonEqualTo(expectedResponse))
+        given().auth().basic("user", "us3r")
+            .`when`().get("/api/books")
+            .then().contentType(MediaType.APPLICATION_JSON)
+            .body(JsonMatcher.jsonEqualTo(expectedResponse))
 
     }
 
@@ -172,12 +171,12 @@ internal class BooksControllerIntTest {
                     }
                 """
 
-        given()
-                .contentType(MediaType.APPLICATION_JSON).body(requestBody)
-                .`when`().post("/api/books").then()
-                .statusCode(HttpStatus.SC_CREATED)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(JsonMatcher.jsonEqualTo(expectedResponse))
+        given().auth().basic("curator", "curat0r")
+            .contentType(MediaType.APPLICATION_JSON).body(requestBody)
+            .`when`().post("/api/books").then()
+            .statusCode(HttpStatus.SC_CREATED)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(JsonMatcher.jsonEqualTo(expectedResponse))
 
     }
 
@@ -204,12 +203,12 @@ internal class BooksControllerIntTest {
                 """
 
         given()
-                .header("X-Correlation-ID", correlationId)
-                .contentType(MediaType.APPLICATION_JSON).body(requestBody)
-                .`when`().post("/api/books").then()
-                .statusCode(HttpStatus.SC_BAD_REQUEST)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(JsonMatcher.jsonEqualTo(expectedResponse))
+            .header("X-Correlation-ID", correlationId)
+            .contentType(MediaType.APPLICATION_JSON).body(requestBody)
+            .`when`().post("/api/books").then()
+            .statusCode(HttpStatus.SC_BAD_REQUEST)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(JsonMatcher.jsonEqualTo(expectedResponse))
     }
 
     @Test
@@ -229,12 +228,12 @@ internal class BooksControllerIntTest {
                 """
 
         given()
-                .contentType(MediaType.APPLICATION_JSON).body(requestBody)
-                .header("X-Correlation-ID", correlationId)
-                .`when`().post("/api/books").then()
-                .statusCode(HttpStatus.SC_BAD_REQUEST)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(JsonMatcher.jsonEqualTo(expectedResponse))
+            .contentType(MediaType.APPLICATION_JSON).body(requestBody)
+            .header("X-Correlation-ID", correlationId)
+            .`when`().post("/api/books").then()
+            .statusCode(HttpStatus.SC_BAD_REQUEST)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(JsonMatcher.jsonEqualTo(expectedResponse))
     }
 
     //================================================================================
@@ -264,12 +263,12 @@ internal class BooksControllerIntTest {
                 """
 
         given()
-                .contentType(MediaType.APPLICATION_JSON).body(requestBody)
-                .header("X-Correlation-ID", correlationId)
-                .`when`().post("/api/books").then()
-                .statusCode(HttpStatus.SC_BAD_REQUEST)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(JsonMatcher.jsonEqualTo(expectedResponse))
+            .contentType(MediaType.APPLICATION_JSON).body(requestBody)
+            .header("X-Correlation-ID", correlationId)
+            .`when`().post("/api/books").then()
+            .statusCode(HttpStatus.SC_BAD_REQUEST)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(JsonMatcher.jsonEqualTo(expectedResponse))
     }
 
     @Test
@@ -287,12 +286,12 @@ internal class BooksControllerIntTest {
                 }
             """
 
-        given()
-                .header("X-Correlation-ID", correlationId)
-                .`when`().get("/api/books/$id")
-                .then().statusCode(HttpStatus.SC_NOT_FOUND)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(JsonMatcher.jsonEqualTo(expectedResponse))
+        given().auth().basic("curator", "curat0r")
+            .header("X-Correlation-ID", correlationId)
+            .`when`().get("/api/books/$id")
+            .then().statusCode(HttpStatus.SC_NOT_FOUND)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(JsonMatcher.jsonEqualTo(expectedResponse))
     }
 
     @Test
@@ -312,11 +311,11 @@ internal class BooksControllerIntTest {
             """
 
         given()
-                .header("X-Correlation-ID", correlationId)
-                .`when`().get("/api/books/malformed-id")
-                .then().statusCode(HttpStatus.SC_BAD_REQUEST)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(JsonMatcher.jsonEqualTo(expectedResponse))
+            .header("X-Correlation-ID", correlationId)
+            .`when`().get("/api/books/malformed-id")
+            .then().statusCode(HttpStatus.SC_BAD_REQUEST)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(JsonMatcher.jsonEqualTo(expectedResponse))
     }
 
     @Test
@@ -326,8 +325,9 @@ internal class BooksControllerIntTest {
         every { bookDataStore.delete(availableBookRecord) } returns Unit
 
         given()
-                .`when`().delete("/api/books/$id")
-                .then().statusCode(HttpStatus.SC_NO_CONTENT).contentType("")
+            .auth().basic("curator", "curat0r")
+            .`when`().delete("/api/books/$id")
+            .then().statusCode(HttpStatus.SC_NO_CONTENT).contentType("")
     }
 
     @Test
@@ -344,11 +344,12 @@ internal class BooksControllerIntTest {
                 """
 
         given()
-                .header("X-Correlation-ID", correlationId)
-                .`when`().delete("/api/books/$id").then()
-                .statusCode(HttpStatus.SC_NOT_FOUND)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(JsonMatcher.jsonEqualTo(expectedResponse))
+            .auth().basic("curator", "curat0r")
+            .header("X-Correlation-ID", correlationId)
+            .`when`().delete("/api/books/$id").then()
+            .statusCode(HttpStatus.SC_NOT_FOUND)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(JsonMatcher.jsonEqualTo(expectedResponse))
 
     }
 
@@ -369,11 +370,11 @@ internal class BooksControllerIntTest {
             """
 
         given()
-                .header("X-Correlation-ID", correlationId)
-                .`when`().delete("/api/books/malformed-id")
-                .then().statusCode(HttpStatus.SC_BAD_REQUEST)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(JsonMatcher.jsonEqualTo(expectedResponse))
+            .header("X-Correlation-ID", correlationId)
+            .`when`().delete("/api/books/malformed-id")
+            .then().statusCode(HttpStatus.SC_BAD_REQUEST)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(JsonMatcher.jsonEqualTo(expectedResponse))
     }
 
     //================================================================================
@@ -404,12 +405,12 @@ internal class BooksControllerIntTest {
                     }
                 """
 
-        given()
-                .contentType(MediaType.APPLICATION_JSON).body(requestBody)
-                .`when`().put("/api/books/$id/authors").then()
-                .statusCode(HttpStatus.SC_OK)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(JsonMatcher.jsonEqualTo(expectedResponse))
+        given().auth().basic("curator", "curat0r")
+            .contentType(MediaType.APPLICATION_JSON).body(requestBody)
+            .`when`().put("/api/books/$id/authors").then()
+            .statusCode(HttpStatus.SC_OK)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(JsonMatcher.jsonEqualTo(expectedResponse))
 
     }
 
@@ -433,12 +434,12 @@ internal class BooksControllerIntTest {
                 }
             """
 
-        given()
-                .header("X-Correlation-ID", correlationId)
-                .contentType(MediaType.APPLICATION_JSON).body(requestBody)
-                .`when`().put("/api/books/$id/authors")
-                .then().contentType(MediaType.APPLICATION_JSON)
-                .body(JsonMatcher.jsonEqualTo(expectedResponse))
+        given().auth().basic("curator", "curat0r")
+            .header("X-Correlation-ID", correlationId)
+            .contentType(MediaType.APPLICATION_JSON).body(requestBody)
+            .`when`().put("/api/books/$id/authors")
+            .then().contentType(MediaType.APPLICATION_JSON)
+            .body(JsonMatcher.jsonEqualTo(expectedResponse))
     }
 
     @Test
@@ -464,12 +465,12 @@ internal class BooksControllerIntTest {
                 }
             """
 
-        given()
-                .header("X-Correlation-ID", correlationId)
-                .contentType(MediaType.APPLICATION_JSON).body(requestBody)
-                .`when`().put("/api/books/$id/authors")
-                .then().contentType(MediaType.APPLICATION_JSON)
-                .body(JsonMatcher.jsonEqualTo(expectedResponse))
+        given().auth().basic("curator", "curat0r")
+            .header("X-Correlation-ID", correlationId)
+            .contentType(MediaType.APPLICATION_JSON).body(requestBody)
+            .`when`().put("/api/books/$id/authors")
+            .then().contentType(MediaType.APPLICATION_JSON)
+            .body(JsonMatcher.jsonEqualTo(expectedResponse))
     }
 
     @Test
@@ -487,10 +488,10 @@ internal class BooksControllerIntTest {
                 }
             """
 
-        given()
-                .`when`().delete("/api/books/$id/authors")
-                .then().contentType(MediaType.APPLICATION_JSON)
-                .body(JsonMatcher.jsonEqualTo(expectedResponse))
+        given().auth().basic("curator", "curat0r")
+            .`when`().delete("/api/books/$id/authors")
+            .then().contentType(MediaType.APPLICATION_JSON)
+            .body(JsonMatcher.jsonEqualTo(expectedResponse))
 
     }
 
@@ -507,11 +508,11 @@ internal class BooksControllerIntTest {
                 }
             """
 
-        given()
-                .header("X-Correlation-ID", correlationId)
-                .`when`().delete("/api/books/$id/authors")
-                .then().contentType(MediaType.APPLICATION_JSON)
-                .body(JsonMatcher.jsonEqualTo(expectedResponse))
+        given().auth().basic("curator", "curat0r")
+            .header("X-Correlation-ID", correlationId)
+            .`when`().delete("/api/books/$id/authors")
+            .then().contentType(MediaType.APPLICATION_JSON)
+            .body(JsonMatcher.jsonEqualTo(expectedResponse))
     }
 
     //================================================================================
@@ -546,11 +547,12 @@ internal class BooksControllerIntTest {
                 """
 
         given()
-                .contentType(MediaType.APPLICATION_JSON).body(requestBody)
-                .`when`().post("/api/books/$id/borrow").then()
-                .statusCode(HttpStatus.SC_OK)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(JsonMatcher.jsonEqualTo(expectedResponse))
+            .auth().basic("user", "us3r")
+            .contentType(MediaType.APPLICATION_JSON).body(requestBody)
+            .`when`().post("/api/books/$id/borrow").then()
+            .statusCode(HttpStatus.SC_OK)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(JsonMatcher.jsonEqualTo(expectedResponse))
 
     }
 
@@ -576,12 +578,13 @@ internal class BooksControllerIntTest {
                 """
 
         given()
-                .header("X-Correlation-ID", correlationId)
-                .contentType(MediaType.APPLICATION_JSON).body(requestBody)
-                .`when`().post("/api/books/$id/borrow").then()
-                .statusCode(HttpStatus.SC_CONFLICT)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(JsonMatcher.jsonEqualTo(expectedResponse))
+            .auth().basic("user", "us3r")
+            .header("X-Correlation-ID", correlationId)
+            .contentType(MediaType.APPLICATION_JSON).body(requestBody)
+            .`when`().post("/api/books/$id/borrow").then()
+            .statusCode(HttpStatus.SC_CONFLICT)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(JsonMatcher.jsonEqualTo(expectedResponse))
     }
 
     @Test
@@ -604,12 +607,13 @@ internal class BooksControllerIntTest {
                 """
 
         given()
-                .header("X-Correlation-ID", correlationId)
-                .contentType(MediaType.APPLICATION_JSON).body(requestBody)
-                .`when`().post("/api/books/$id/borrow").then()
-                .statusCode(HttpStatus.SC_NOT_FOUND)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(JsonMatcher.jsonEqualTo(expectedResponse))
+            .auth().basic("user", "us3r")
+            .header("X-Correlation-ID", correlationId)
+            .contentType(MediaType.APPLICATION_JSON).body(requestBody)
+            .`when`().post("/api/books/$id/borrow").then()
+            .statusCode(HttpStatus.SC_NOT_FOUND)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(JsonMatcher.jsonEqualTo(expectedResponse))
 
     }
 
@@ -634,13 +638,13 @@ internal class BooksControllerIntTest {
                     }
                 """
 
-        given()
-                .header("X-Correlation-ID", correlationId)
-                .contentType(MediaType.APPLICATION_JSON).body(requestBody)
-                .`when`().post("/api/books/$id/borrow").then()
-                .statusCode(HttpStatus.SC_BAD_REQUEST)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(JsonMatcher.jsonEqualTo(expectedResponse))
+        given().auth().basic("curator", "curat0r")
+            .header("X-Correlation-ID", correlationId)
+            .contentType(MediaType.APPLICATION_JSON).body(requestBody)
+            .`when`().post("/api/books/$id/borrow").then()
+            .statusCode(HttpStatus.SC_BAD_REQUEST)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(JsonMatcher.jsonEqualTo(expectedResponse))
 
     }
 
@@ -661,12 +665,12 @@ internal class BooksControllerIntTest {
                 """
 
         given()
-                .contentType(MediaType.APPLICATION_JSON).body(requestBody)
-                .header("X-Correlation-ID", correlationId)
-                .`when`().post("/api/books/$id/borrow").then()
-                .statusCode(HttpStatus.SC_BAD_REQUEST)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(JsonMatcher.jsonEqualTo(expectedResponse))
+            .contentType(MediaType.APPLICATION_JSON).body(requestBody)
+            .header("X-Correlation-ID", correlationId)
+            .`when`().post("/api/books/$id/borrow").then()
+            .statusCode(HttpStatus.SC_BAD_REQUEST)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(JsonMatcher.jsonEqualTo(expectedResponse))
 
     }
 
@@ -693,12 +697,12 @@ internal class BooksControllerIntTest {
             """
 
         given()
-                .header("X-Correlation-ID", correlationId)
-                .contentType(MediaType.APPLICATION_JSON).body(requestBody)
-                .`when`().post("/api/books/malformed-id/borrow")
-                .then().statusCode(HttpStatus.SC_BAD_REQUEST)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(JsonMatcher.jsonEqualTo(expectedResponse))
+            .header("X-Correlation-ID", correlationId)
+            .contentType(MediaType.APPLICATION_JSON).body(requestBody)
+            .`when`().post("/api/books/malformed-id/borrow")
+            .then().statusCode(HttpStatus.SC_BAD_REQUEST)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(JsonMatcher.jsonEqualTo(expectedResponse))
 
     }
 
@@ -730,12 +734,12 @@ internal class BooksControllerIntTest {
                     }
                 """
 
-        given()
-                .contentType(MediaType.APPLICATION_JSON).body(requestBody)
-                .`when`().put("/api/books/$id/title").then()
-                .statusCode(HttpStatus.SC_OK)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(JsonMatcher.jsonEqualTo(expectedResponse))
+        given().auth().basic("curator", "curat0r")
+            .contentType(MediaType.APPLICATION_JSON).body(requestBody)
+            .`when`().put("/api/books/$id/title").then()
+            .statusCode(HttpStatus.SC_OK)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(JsonMatcher.jsonEqualTo(expectedResponse))
 
     }
 
@@ -758,13 +762,13 @@ internal class BooksControllerIntTest {
                     }
                 """
 
-        given()
-                .header("X-Correlation-ID", correlationId)
-                .contentType(MediaType.APPLICATION_JSON).body(requestBody)
-                .`when`().put("/api/books/$id/title").then()
-                .statusCode(HttpStatus.SC_NOT_FOUND)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(JsonMatcher.jsonEqualTo(expectedResponse))
+        given().auth().basic("curator", "curat0r")
+            .header("X-Correlation-ID", correlationId)
+            .contentType(MediaType.APPLICATION_JSON).body(requestBody)
+            .`when`().put("/api/books/$id/title").then()
+            .statusCode(HttpStatus.SC_NOT_FOUND)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(JsonMatcher.jsonEqualTo(expectedResponse))
 
     }
 
@@ -791,19 +795,19 @@ internal class BooksControllerIntTest {
                     }
                 """
 
-        given()
-                .header("X-Correlation-ID", correlationId)
-                .contentType(MediaType.APPLICATION_JSON).body(requestBody)
-                .`when`().put("/api/books/$id/title").then()
-                .statusCode(HttpStatus.SC_BAD_REQUEST)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(JsonMatcher.jsonEqualTo(expectedResponse))
+        given().auth().basic("curator", "curat0r")
+            .header("X-Correlation-ID", correlationId)
+            .contentType(MediaType.APPLICATION_JSON).body(requestBody)
+            .`when`().put("/api/books/$id/title").then()
+            .statusCode(HttpStatus.SC_BAD_REQUEST)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(JsonMatcher.jsonEqualTo(expectedResponse))
 
     }
 
 
     private fun availableBook(id: BookId, book: Book) = BookRecord(id, book)
     private fun borrowedBook(id: BookId, book: Book, borrowedBy: String, borrowedOn: String) = availableBook(id, book)
-            .borrow(Borrower(borrowedBy), OffsetDateTime.parse(borrowedOn))
+        .borrow(Borrower(borrowedBy), OffsetDateTime.parse(borrowedOn))
 
 }

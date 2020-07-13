@@ -9,6 +9,7 @@ import library.service.business.events.EventDispatcher
 import library.service.business.exceptions.BookNotFoundException
 import java.time.Clock
 import java.time.OffsetDateTime
+import javax.annotation.security.RolesAllowed
 import javax.inject.Singleton
 
 /**
@@ -41,6 +42,7 @@ class BookCollection(
      * @param book the book to add to the collection
      * @return the [BookRecord] for the created book data
      */
+    @RolesAllowed("curator")
     fun addBook(book: Book): BookRecord {
 
         val bookId = idGenerator.generate()
@@ -62,6 +64,7 @@ class BookCollection(
      * @return the [BookRecord] for the given ID
      * @throws BookNotFoundException in case there is no book for the given ID
      */
+    @RolesAllowed("user")
     fun getBook(id: BookId): BookRecord {
         return dataStore.findById(id) ?: throw BookNotFoundException(id)
     }
@@ -77,6 +80,7 @@ class BookCollection(
      * @param id the unique ID of the book to delete
      * @throws BookNotFoundException in case there is no book for the given ID
      */
+    @RolesAllowed("curator")
     fun removeBook(id: BookId) {
         val bookRecord = getBook(id)
         dataStore.delete(bookRecord)
@@ -102,6 +106,7 @@ class BookCollection(
      * @throws BookNotFoundException in case there is no book for the given ID
      * @throws BookAlreadyBorrowedException in case the book is already borrowed
      */
+    @RolesAllowed("user")
     fun borrowBook(id: BookId, borrower: Borrower): BookRecord {
         val bookRecord = getBook(id)
         val borrowedBookRecord = bookRecord.borrow(borrower, now())
@@ -121,6 +126,7 @@ class BookCollection(
      *
      * @return a list of all [BookRecord]
      */
+    @RolesAllowed("user")
     fun getAllBooks(): List<BookRecord> {
         return dataStore.findAll()
     }
@@ -137,6 +143,7 @@ class BookCollection(
      * @param updateFunction the function used for updating the book record
      * @throws BookNotFoundException in case there is no book for the given ID
      */
+    @RolesAllowed("curator")
     fun updateBook(id: BookId, updateFunction: (BookRecord) -> BookRecord): BookRecord {
         val bookRecord = getBook(id)
         val updatedRecord = updateFunction(bookRecord)
@@ -163,6 +170,7 @@ class BookCollection(
      * @throws BookNotFoundException in case there is no book for the given ID
      * @throws BookAlreadyReturnedException in case the book is already returned
      */
+    @RolesAllowed("user")
     fun returnBook(id: BookId): BookRecord {
         val bookRecord = getBook(id)
         val returnedBookRecord = bookRecord.`return`()
