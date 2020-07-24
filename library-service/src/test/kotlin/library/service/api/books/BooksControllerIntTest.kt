@@ -92,6 +92,8 @@ internal class BooksControllerIntTest {
 
         every { bookDataStore.findAll() } returns listOf(borrowedBook)
 
+
+
         given().auth().basic("user", "us3r")
             .`when`().get("/api/books")
             .then().contentType(MediaType.APPLICATION_JSON)
