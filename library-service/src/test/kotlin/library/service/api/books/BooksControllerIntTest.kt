@@ -38,6 +38,7 @@ internal class BooksControllerIntTest {
     private final val availableBookRecord = availableBook(id, book)
     private val borrowedBookRecord = borrowedBook(id, book, "Uncle Bob", "2017-08-20T12:34:56.789Z")
     private val correlationId = UUID.randomUUID().toString()
+    private val localhost = "http://localhost:8081"
 
     @Produces
     @Mock
@@ -68,18 +69,26 @@ internal class BooksControllerIntTest {
 
         val expectedResponse = """
             [
-              {
-                "isbn": "9780137081073",
-                "title": "Clean Coder: A Code of Conduct for Professional Programmers",
-                "authors": [
-                  "Robert C. Martin"
-                ],
-                "numberOfPages": 256,
-                "borrowed": {
-                  "by": "Uncle Bob",
-                  "on": "2017-08-20T12:34:56.789Z"
+                {
+                    "isbn": "9780137081073",
+                    "title": "Clean Coder: A Code of Conduct for Professional Programmers",
+                    "authors": [
+                        "Robert C. Martin"
+                    ],
+                    "numberOfPages": 256,
+                    "borrowed": {
+                        "by": "Uncle Bob",
+                        "on": "2017-08-20T12:34:56.789Z"
+                    },
+                    "_links": {
+                        "self": {
+                            "href": "${localhost}/api/books/53397dc0-932d-4198-801a-3e00b2742ba7"
+                        },
+                        "return": {
+                            "href": "${localhost}/api/books/53397dc0-932d-4198-801a-3e00b2742ba7/return"
+                        }
+                    }
                 }
-              }
             ]
         """
 
@@ -118,28 +127,44 @@ internal class BooksControllerIntTest {
 
         val expectedResponse = """
             [
-              {
-                "isbn": "9780132350884",
-                "title": "Clean Code: A Handbook of Agile Software Craftsmanship",
-                "authors": [
-                  "Robert C. Martin",
-                  "Dean Wampler"
-                ],
-                "numberOfPages": 462,
-                "borrowed": null
-              },
-              {
-                "isbn": "9780137081073",
-                "title": "Clean Coder: A Code of Conduct for Professional Programmers",
-                "authors": [
-                  "Robert C. Martin"
-                ],
-                "numberOfPages": 256,
-                "borrowed": {
-                  "by": "Uncle Bob",
-                  "on": "2017-08-20T12:34:56.789Z"
+                {
+                    "isbn": "9780132350884",
+                    "title": "Clean Code: A Handbook of Agile Software Craftsmanship",
+                    "authors": [
+                        "Robert C. Martin",
+                        "Dean Wampler"
+                    ],
+                    "numberOfPages": 462,
+                    "borrowed": null,
+                    "_links": {
+                        "self": {
+                            "href": "${localhost}/api/books/883a2931-325b-4482-8972-8cb6f7d33816"
+                        },
+                        "borrow": {
+                            "href": "${localhost}/api/books/883a2931-325b-4482-8972-8cb6f7d33816/borrow"
+                        }
+                    }
+                },
+                {
+                    "isbn": "9780137081073",
+                    "title": "Clean Coder: A Code of Conduct for Professional Programmers",
+                    "authors": [
+                        "Robert C. Martin"
+                    ],
+                    "numberOfPages": 256,
+                    "borrowed": {
+                        "by": "Uncle Bob",
+                        "on": "2017-08-20T12:34:56.789Z"
+                    },
+                    "_links": {
+                        "self": {
+                            "href": "${localhost}/api/books/53397dc0-932d-4198-801a-3e00b2742ba7"
+                        },
+                        "return": {
+                            "href": "${localhost}/api/books/53397dc0-932d-4198-801a-3e00b2742ba7/return"
+                        }
+                    }
                 }
-              }
             ]
         """
 
@@ -165,11 +190,22 @@ internal class BooksControllerIntTest {
 
         val expectedResponse = """
                     {
-                       "isbn": "9780132350884",
-                       "title": "Clean Code: A Handbook of Agile Software Craftsmanship",
-                       "authors": [],
-                       "numberOfPages": null,
-                       "borrowed": null
+                        "isbn": "9780132350884",
+                        "title": "Clean Code: A Handbook of Agile Software Craftsmanship",
+                        "authors": [],
+                        "numberOfPages": null,
+                        "borrowed": null,
+                        "_links": {
+                            "self": {
+                                "href": "${localhost}/api/books/${bookId}"
+                            },
+                            "borrow": {
+                                "href": "${localhost}/api/books/${bookId}/borrow"
+                            },
+                            "delete": {
+                                "href": "${localhost}/api/books/${bookId}"
+                            }
+                        }
                     }
                 """
 
@@ -403,7 +439,18 @@ internal class BooksControllerIntTest {
                             "Bar"
                         ],
                         "numberOfPages": ${book.numberOfPages},
-                        "borrowed": null
+                        "borrowed": null,
+                        "_links": {
+                            "self": {
+                                "href": "${localhost}/api/books/${id}"
+                            },
+                            "borrow": {
+                                "href": "${localhost}/api/books/${id}/borrow"
+                            },
+                            "delete": {
+                                "href": "${localhost}/api/books/${id}"
+                            }
+                        }
                     }
                 """
 
@@ -485,8 +532,20 @@ internal class BooksControllerIntTest {
                     "isbn": "${book.isbn}",
                     "title": "${book.title}",
                     "authors": [],
-                    "numberOfPages": ${book.numberOfPages},
-                    "borrowed": null
+                    "numberOfPages": ${book.numberOfPages
+                        },
+                    "borrowed": null,
+                    "_links": {
+                        "self": {
+                            "href": "${localhost}/api/books/${id}"
+                        },
+                        "borrow": {
+                            "href": "${localhost}/api/books/${id}/borrow"
+                        },
+                        "delete": {
+                            "href": "${localhost}/api/books/${id}"
+                        }
+                    }
                 }
             """
 
@@ -544,6 +603,14 @@ internal class BooksControllerIntTest {
                         "borrowed": {
                             "by": "Uncle Bob",
                             "on": "2017-08-20T12:34:56.789Z"
+                        },
+                        "_links": {
+                            "self": {
+                                "href": "${localhost}/api/books/${id}"
+                            },
+                            "return": {
+                                "href": "${localhost}/api/books/${id}/return"
+                            }
                         }
                     }
                 """
@@ -732,7 +799,18 @@ internal class BooksControllerIntTest {
                             "Dean Wampler"
                         ],
                         "numberOfPages": 462,
-                        "borrowed": null
+                        "borrowed": null,
+                        "_links": {
+                            "self": {
+                                "href": "${localhost}/api/books/${id}"
+                            },
+                            "borrow": {
+                                "href": "${localhost}/api/books/${id}/borrow"
+                            },
+                            "delete": {
+                                "href": "${localhost}/api/books/${id}"
+                            }
+                        }
                     }
                 """
 

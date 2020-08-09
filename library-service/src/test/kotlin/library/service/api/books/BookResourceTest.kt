@@ -22,7 +22,8 @@ class BookResourceTest {
                     title = "Hello World",
                     authors = null,
                     numberOfPages = null,
-                    borrowed = null
+                    borrowed = null,
+                    _links = null
             )
             assertJsonSerializable(cut)
         }
@@ -34,7 +35,8 @@ class BookResourceTest {
                     title = "Hello World",
                     authors = emptyList(),
                     numberOfPages = 256,
-                    borrowed = null
+                    borrowed = null,
+                    _links = null
             )
             assertJsonSerializable(cut)
         }
@@ -49,7 +51,8 @@ class BookResourceTest {
                     borrowed = Borrowed(
                             by = "Someone",
                             on = "2017-08-20T12:34:56.789Z"
-                    )
+                    ),
+                    _links = null
             )
             assertJsonSerializable(cut)
         }

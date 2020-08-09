@@ -10,8 +10,7 @@ import org.jboss.resteasy.annotations.jaxrs.PathParam
 import java.util.*
 import javax.validation.Valid
 import javax.ws.rs.*
-import javax.ws.rs.core.MediaType
-import javax.ws.rs.core.Response
+import javax.ws.rs.core.*
 
 
 @Path("/api/books")
@@ -23,17 +22,17 @@ class BooksController(
 ) {
 
     @GET
-    fun getBooks(): Response {
+    fun getBooks(@Context uriInfo: UriInfo, @Context securityContext: SecurityContext): Response {
         val allBooks = collection.getAllBooks()
         val bookResources = mutableListOf<BookResource>()
         for (record in allBooks){
-            bookResources.add(assembler.toResource(record))
+            assembler.toResource(uriInfo, record, securityContext)?.let { bookResources.add(it) }
         }
         return Response.status(Response.Status.OK).entity(bookResources).build()
     }
 
     @POST
-    fun postBook(@Valid body: CreateBookRequest): Response {
+    fun postBook(@Context uriInfo: UriInfo, @Valid body: CreateBookRequest, @Context securityContext: SecurityContext): Response {
         val book = Book(
                 isbn = Isbn13.parse(body.isbn!!),
                 title = Title(body.title!!),
@@ -41,24 +40,25 @@ class BooksController(
                 numberOfPages = null
         )
         val bookRecord = collection.addBook(book)
-        return Response.status(Response.Status.CREATED).entity(assembler.toResource(bookRecord)).build()
+        return Response.status(Response.Status.CREATED).entity(assembler.toResource(uriInfo, bookRecord, securityContext)).build()
     }
 
     @PUT
     @Path("/{id}/title")
-    fun putBookTitle(@PathParam id: UUID, body: UpdateTitleRequest): Response {
+    fun putBookTitle(@Context uriInfo: UriInfo, @PathParam id: UUID, body: UpdateTitleRequest,
+                     @Context securityContext: SecurityContext): Response {
         val bookRecord = collection.updateBook(BookId(id)) { it ->
             if (body.title.isNullOrBlank()) {
                 throw MalformedValueException("The field 'title' must not be blank.")
             }
             it.changeTitle(Title(body.title))
         }
-        return Response.status(Response.Status.OK).entity(assembler.toResource(bookRecord)).build()
+        return Response.status(Response.Status.OK).entity(assembler.toResource(uriInfo, bookRecord, securityContext)).build()
     }
 
     @PUT
     @Path("/{id}/authors")
-    fun putBookAuthors(@PathParam id: UUID, body: UpdateAuthorsRequest): Response {
+    fun putBookAuthors(@Context uriInfo: UriInfo, @PathParam id: UUID, body: UpdateAuthorsRequest, @Context securityContext: SecurityContext): Response {
         val bookRecord = collection.updateBook(BookId(id)) { it ->
             if (body.authors.isNullOrEmpty()) {
                 throw MalformedValueException("The field 'authors' must not be empty.")
@@ -66,43 +66,43 @@ class BooksController(
             it.changeAuthors(body.authors.map { Author(it) })
 
         }
-        return Response.status(Response.Status.OK).entity(assembler.toResource(bookRecord)).build()
+        return Response.status(Response.Status.OK).entity(assembler.toResource(uriInfo, bookRecord, securityContext)).build()
     }
 
     @DELETE
     @Path("/{id}/authors")
-    fun deleteBookAuthors(@PathParam id: UUID): Response {
+    fun deleteBookAuthors(@Context uriInfo: UriInfo, @PathParam id: UUID, @Context securityContext: SecurityContext): Response {
         val bookRecord = collection.updateBook(BookId(id)) {
             it.changeAuthors(emptyList())
         }
-        return Response.status(Response.Status.OK).entity(assembler.toResource(bookRecord)).build()
+        return Response.status(Response.Status.OK).entity(assembler.toResource(uriInfo, bookRecord, securityContext)).build()
     }
 
     @PUT
     @Path("/{id}/numberOfPages")
-    fun putBookNumberOfPages(@PathParam id: UUID, @Valid body: UpdateNumberOfPagesRequest): Response {
+    fun putBookNumberOfPages(@Context uriInfo: UriInfo, @PathParam id: UUID, @Valid body: UpdateNumberOfPagesRequest, @Context securityContext: SecurityContext): Response {
         val bookRecord = collection.updateBook(BookId(id)) {
             it.changeNumberOfPages(body.numberOfPages)
         }
-        return Response.status(Response.Status.OK).entity(assembler.toResource(bookRecord)).build()
+        return Response.status(Response.Status.OK).entity(assembler.toResource(uriInfo, bookRecord, securityContext)).build()
     }
 
     @DELETE
     @Path("/{id}/numberOfPages")
-    fun deleteBookNumberOfPages(@PathParam id: UUID): Response {
+    fun deleteBookNumberOfPages(@Context uriInfo: UriInfo, @PathParam id: UUID, @Context securityContext: SecurityContext): Response {
         val bookRecord = collection.updateBook(BookId(id)) {
             it.changeNumberOfPages(null)
         }
-        return Response.status(Response.Status.OK).entity(assembler.toResource(bookRecord)).build()
+        return Response.status(Response.Status.OK).entity(assembler.toResource(uriInfo, bookRecord, securityContext)).build()
     }
 
     @GET
     @Path("/{id}")
-    fun getBook(@PathParam id: String): Response? {
+    fun getBook(@Context uriInfo: UriInfo, @PathParam id: String, @Context securityContext: SecurityContext): Response? {
         try {
             val uuid = UUID.fromString(id)
             val bookRecord = collection.getBook(BookId(uuid))
-            return Response.status(Response.Status.OK).entity(assembler.toResource(bookRecord)).build()
+            return Response.status(Response.Status.OK).entity(assembler.toResource(uriInfo, bookRecord, securityContext)).build()
         } catch (e: IllegalArgumentException) {
             throw MalformedValueException("The request's 'id' parameter is malformed.")
         }
@@ -122,11 +122,11 @@ class BooksController(
 
     @POST
     @Path("/{id}/borrow")
-    fun postBorrowBook(@PathParam id: String, @Valid body: BorrowBookRequest): Response? {
+    fun postBorrowBook(@Context uriInfo: UriInfo, @PathParam id: String, @Valid body: BorrowBookRequest, @Context securityContext: SecurityContext): Response? {
         try {
             val uuid = UUID.fromString(id)
             val bookRecord = collection.borrowBook(BookId(uuid), Borrower(body.borrower!!))
-            return Response.status(Response.Status.OK).entity(assembler.toResource(bookRecord)).build()
+            return Response.status(Response.Status.OK).entity(assembler.toResource(uriInfo, bookRecord, securityContext)).build()
         } catch (e: IllegalArgumentException) {
             throw MalformedValueException("The request's 'id' parameter is malformed.")
         }
@@ -134,9 +134,9 @@ class BooksController(
 
     @POST
     @Path("/{id}/return")
-    fun postReturnBook(@PathParam id: UUID): Response {
+    fun postReturnBook(@Context uriInfo: UriInfo, @PathParam id: UUID, @Context securityContext: SecurityContext): Response {
         val bookRecord = collection.returnBook(BookId(id))
-        return Response.status(Response.Status.OK).entity(assembler.toResource(bookRecord)).build()
+        return Response.status(Response.Status.OK).entity(assembler.toResource(uriInfo, bookRecord, securityContext)).build()
     }
-
 }
+

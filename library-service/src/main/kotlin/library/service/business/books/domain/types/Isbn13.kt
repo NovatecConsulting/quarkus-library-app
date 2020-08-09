@@ -1,6 +1,5 @@
 package library.service.business.books.domain.types
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect
 import library.service.business.books.domain.types.Isbn13.NotAnIsbnNumberException
 import library.service.business.exceptions.MalformedValueException
 
@@ -10,7 +9,6 @@ import library.service.business.exceptions.MalformedValueException
  * This type cannot be instantiated with anything other than 13 digit numbers.
  * Any attempt to do so will result in a [NotAnIsbnNumberException].
  */
-@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 data class Isbn13(
         private val value: String
 ) { 

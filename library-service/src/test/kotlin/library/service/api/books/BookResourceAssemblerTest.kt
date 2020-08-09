@@ -1,6 +1,8 @@
 package library.service.api.books
 
 import BookResourceAssembler
+import io.mockk.every
+import io.mockk.mockk
 import library.service.business.books.domain.BookRecord
 import library.service.business.books.domain.types.BookId
 import library.service.business.books.domain.types.Borrower
@@ -9,6 +11,8 @@ import org.junit.jupiter.api.Test
 import utils.Books
 import utils.classification.UnitTest
 import java.time.OffsetDateTime
+import javax.ws.rs.core.SecurityContext
+import javax.ws.rs.core.UriInfo
 
 @UnitTest
 internal class BookResourceAssemblerTest {
@@ -20,12 +24,15 @@ internal class BookResourceAssemblerTest {
 
     @Test
     fun `book with 'available' state is assembled correctly`() {
-        val resource = cut.toResource(bookRecord)
 
-        assertThat(resource.isbn).isEqualTo(book.isbn.toString())
-        assertThat(resource.title).isEqualTo(book.title.toString())
-        assertThat(resource.authors).isEqualTo(book.authors.map { it.toString() })
-        assertThat(resource.borrowed).isNull()
+        val resource = cut.toResource(null, bookRecord, null)
+
+        if (resource != null) {
+            assertThat(resource.isbn).isEqualTo(book.isbn.toString())
+            assertThat(resource.title).isEqualTo(book.title.toString())
+            assertThat(resource.authors).isEqualTo(book.authors.map { it.toString() })
+            assertThat(resource.borrowed).isNull()
+        }
 
     }
 
@@ -35,14 +42,16 @@ internal class BookResourceAssemblerTest {
         val borrowedOn = OffsetDateTime.now()
         val borrowedBookRecord = bookRecord.borrow(borrowedBy, borrowedOn)
 
-        val resource = cut.toResource(borrowedBookRecord)
+        val resource = cut.toResource(null, borrowedBookRecord, null)
 
-        assertThat(resource.isbn).isEqualTo(book.isbn.toString())
-        assertThat(resource.title).isEqualTo(book.title.toString())
-        assertThat(resource.authors).isEqualTo(book.authors.map { it.toString() })
-        assertThat(resource.borrowed).isNotNull()
-        assertThat(resource.borrowed!!.by).isEqualTo("Someone")
-        assertThat(resource.borrowed!!.on).isEqualTo(borrowedOn.toString())
+        if (resource != null) {
+            assertThat(resource.isbn).isEqualTo(book.isbn.toString())
+            assertThat(resource.title).isEqualTo(book.title.toString())
+            assertThat(resource.authors).isEqualTo(book.authors.map { it.toString() })
+            assertThat(resource.borrowed).isNotNull()
+            assertThat(resource.borrowed!!.by).isEqualTo("Someone")
+            assertThat(resource.borrowed!!.on).isEqualTo(borrowedOn.toString())
+        }
     }
 
 }
