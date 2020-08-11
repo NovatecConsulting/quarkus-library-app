@@ -12,18 +12,15 @@ import javax.ws.rs.core.UriInfo
 @Singleton
 class BookResourceAssembler(
 ) {
-    fun toResource(uriInfo: UriInfo?, bookRecord: BookRecord, securityContext: SecurityContext?): BookResource? {
-        if (uriInfo != null && securityContext != null) {
-            return instantiateResource(uriInfo, bookRecord, securityContext)
-        }
-        return null
+    fun toResource(uriInfo: UriInfo, bookRecord: BookRecord, securityContext: SecurityContext): BookResource? {
+        return instantiateResource(uriInfo, bookRecord, securityContext)
     }
 
-    private fun instantiateResource(uriInfo: UriInfo?, bookRecord: BookRecord, securityContext: SecurityContext?): BookResource {
+    private fun instantiateResource(uriInfo: UriInfo, bookRecord: BookRecord, securityContext: SecurityContext): BookResource {
         val bookState = bookRecord.state
         val links = mutableMapOf<String, Links>()
-        val baseUri = uriInfo?.baseUri.toString()
-        val isCurator = securityContext?.isUserInRole("curator")
+        val baseUri = uriInfo.baseUri.toString()
+        val isCurator = securityContext.isUserInRole("curator")
 
         links["self"] = Links(baseUri + "api/books/" + bookRecord.id)
 
@@ -32,7 +29,7 @@ class BookResourceAssembler(
             is Borrowed -> links["return"] = Links(baseUri + "api/books/" + bookRecord.id + "/return")
         }
 
-        if (isCurator!!) {
+        if (isCurator) {
             links["delete"] = Links(baseUri + "api/books/" + bookRecord.id)
         }
 

@@ -10,6 +10,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import utils.Books
 import utils.classification.UnitTest
+import java.net.URI
 import java.time.OffsetDateTime
 import javax.ws.rs.core.SecurityContext
 import javax.ws.rs.core.UriInfo
@@ -25,7 +26,15 @@ internal class BookResourceAssemblerTest {
     @Test
     fun `book with 'available' state is assembled correctly`() {
 
-        val resource = cut.toResource(null, bookRecord, null)
+        val uriInfo = mockk<UriInfo>()
+        val securityContext = mockk<SecurityContext>()
+        val uri = URI("localhost")
+        every { uriInfo.baseUri } returns uri
+        every { securityContext.isUserInRole(any()) } returns true
+
+
+
+        val resource = cut.toResource(uriInfo, bookRecord, securityContext)
 
         if (resource != null) {
             assertThat(resource.isbn).isEqualTo(book.isbn.toString())
@@ -41,8 +50,14 @@ internal class BookResourceAssemblerTest {
         val borrowedBy = Borrower("Someone")
         val borrowedOn = OffsetDateTime.now()
         val borrowedBookRecord = bookRecord.borrow(borrowedBy, borrowedOn)
+        val uriInfo = mockk<UriInfo>()
+        val securityContext = mockk<SecurityContext>()
+        val uri = URI("localhost")
+        every { uriInfo.baseUri } returns uri
+        every { securityContext.isUserInRole(any()) } returns true
 
-        val resource = cut.toResource(null, borrowedBookRecord, null)
+
+        val resource = cut.toResource(uriInfo, borrowedBookRecord, securityContext)
 
         if (resource != null) {
             assertThat(resource.isbn).isEqualTo(book.isbn.toString())
