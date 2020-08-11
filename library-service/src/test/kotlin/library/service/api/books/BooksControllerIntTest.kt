@@ -105,7 +105,7 @@ internal class BooksControllerIntTest {
 
         given().auth().basic("user", "us3r")
             .`when`().get("/api/books")
-            .then().contentType(MediaType.APPLICATION_JSON)
+            .then().contentType("application/hal+json")
             .body(JsonMatcher.jsonEqualTo(expectedResponse))
     }
 
@@ -170,7 +170,7 @@ internal class BooksControllerIntTest {
 
         given().auth().basic("user", "us3r")
             .`when`().get("/api/books")
-            .then().contentType(MediaType.APPLICATION_JSON)
+            .then().contentType("application/hal+json")
             .body(JsonMatcher.jsonEqualTo(expectedResponse))
 
     }
@@ -213,7 +213,7 @@ internal class BooksControllerIntTest {
             .contentType(MediaType.APPLICATION_JSON).body(requestBody)
             .`when`().post("/api/books").then()
             .statusCode(HttpStatus.SC_CREATED)
-            .contentType(MediaType.APPLICATION_JSON)
+            .contentType("application/hal+json")
             .body(JsonMatcher.jsonEqualTo(expectedResponse))
 
     }
@@ -458,7 +458,7 @@ internal class BooksControllerIntTest {
             .contentType(MediaType.APPLICATION_JSON).body(requestBody)
             .`when`().put("/api/books/$id/authors").then()
             .statusCode(HttpStatus.SC_OK)
-            .contentType(MediaType.APPLICATION_JSON)
+            .contentType("application/hal+json")
             .body(JsonMatcher.jsonEqualTo(expectedResponse))
 
     }
@@ -551,7 +551,7 @@ internal class BooksControllerIntTest {
 
         given().auth().basic("curator", "curat0r")
             .`when`().delete("/api/books/$id/authors")
-            .then().contentType(MediaType.APPLICATION_JSON)
+            .then().contentType("application/hal+json")
             .body(JsonMatcher.jsonEqualTo(expectedResponse))
 
     }
@@ -620,7 +620,7 @@ internal class BooksControllerIntTest {
             .contentType(MediaType.APPLICATION_JSON).body(requestBody)
             .`when`().post("/api/books/$id/borrow").then()
             .statusCode(HttpStatus.SC_OK)
-            .contentType(MediaType.APPLICATION_JSON)
+            .contentType("application/hal+json")
             .body(JsonMatcher.jsonEqualTo(expectedResponse))
 
     }
@@ -818,7 +818,7 @@ internal class BooksControllerIntTest {
             .contentType(MediaType.APPLICATION_JSON).body(requestBody)
             .`when`().put("/api/books/$id/title").then()
             .statusCode(HttpStatus.SC_OK)
-            .contentType(MediaType.APPLICATION_JSON)
+            .contentType("application/hal+json")
             .body(JsonMatcher.jsonEqualTo(expectedResponse))
 
     }

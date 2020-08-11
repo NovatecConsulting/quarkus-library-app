@@ -14,8 +14,8 @@ import javax.ws.rs.core.*
 
 
 @Path("/api/books")
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
+@Produces("application/hal+json")
+@Consumes("application/json")
 class BooksController(
         private val collection: BookCollection,
         private val assembler: BookResourceAssembler

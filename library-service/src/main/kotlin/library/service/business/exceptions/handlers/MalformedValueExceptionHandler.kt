@@ -6,6 +6,7 @@ import org.apache.http.HttpStatus
 import java.time.Clock
 import java.time.OffsetDateTime
 import javax.enterprise.context.ApplicationScoped
+import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 import javax.ws.rs.ext.ExceptionMapper
 import javax.ws.rs.ext.Provider
@@ -30,7 +31,7 @@ class MalformedValueExceptionHandler(
                     details = detailList.toList()
             )
         }
-        return Response.status(HttpStatus.SC_BAD_REQUEST).entity(errorDescription).build()
+        return Response.status(HttpStatus.SC_BAD_REQUEST).type(MediaType.APPLICATION_JSON).entity(errorDescription).build()
     }
 
 }
